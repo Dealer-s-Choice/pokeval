@@ -1,7 +1,8 @@
 [wrap-git]
 url = https://github.com/Dealer-s-Choice/deckhandler.git
 
-revision = HEAD
+# HEAD does not work with meson 0.61.2 (but only when dealing with nested subprojects?)
+revision = trunk
 depth = 1
 
 [provide]
