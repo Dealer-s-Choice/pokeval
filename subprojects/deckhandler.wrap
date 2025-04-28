@@ -2,7 +2,7 @@
 url = https://github.com/Dealer-s-Choice/deckhandler.git
 
 # HEAD does not work with meson 0.61.2 (but only when dealing with nested subprojects?)
-revision = trunk
+revision = master
 depth = 1
 
 [provide]
