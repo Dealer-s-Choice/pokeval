@@ -29,6 +29,9 @@
 #ifndef __LIB_H
 #define __LIB_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <stdbool.h>
 
 #include "deckhandler.h"
@@ -57,4 +60,7 @@ struct hand_t {
 
 short evaluate_hand(struct hand_t hand);
 
+#ifdef __cplusplus
+}
+#endif
 #endif
