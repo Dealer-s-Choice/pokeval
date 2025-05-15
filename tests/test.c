@@ -14,7 +14,7 @@
   } while (0)
 
 static void test_static_hands(void) {
-  int rf_faces[] = {ACE, KING, QUEEN, JACK, TEN};
+  int rf_faces[] = {KING, QUEEN, ACE, JACK, TEN};
   int rf_suits[] = {HEARTS, HEARTS, HEARTS, HEARTS, HEARTS};
   TEST_HAND(ROYAL_FLUSH, rf_faces, rf_suits);
 

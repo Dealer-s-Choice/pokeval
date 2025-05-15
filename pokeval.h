@@ -66,6 +66,8 @@ struct pokeval_need_comparing_t {
   struct pokeval_hand_t hand;
 };
 
+void sort_hand(struct pokeval_hand_t *hand);
+
 short pokeval_evaluate_hand(struct pokeval_hand_t hand);
 
 // Returns the number of winners and fills `winners` with their indices.

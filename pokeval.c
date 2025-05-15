@@ -50,10 +50,13 @@ static int count_face(const struct pokeval_hand_t *hand, int face_val) {
   return count;
 }
 
-static void sort_hand(struct pokeval_hand_t *hand) {
+void sort_hand(struct pokeval_hand_t *hand) {
   for (int i = 0; i < HAND_SIZE - 1; ++i) {
     for (int j = i + 1; j < HAND_SIZE; ++j) {
-      if (hand->card[i].face_val > hand->card[j].face_val) {
+      int val_i = (hand->card[i].face_val == ACE) ? 14 : hand->card[i].face_val;
+      int val_j = (hand->card[j].face_val == ACE) ? 14 : hand->card[j].face_val;
+
+      if (val_i < val_j) {
         struct dh_card tmp = hand->card[i];
         hand->card[i] = hand->card[j];
         hand->card[j] = tmp;
@@ -147,9 +150,9 @@ static int get_quad_value(const struct pokeval_hand_t *hand) {
 static int compare_high_cards(const struct pokeval_hand_t *a, const struct pokeval_hand_t *b) {
   for (int i = 0; i < HAND_SIZE; ++i) {
     if (a->card[i].face_val > b->card[i].face_val)
-      return -1;
-    if (a->card[i].face_val < b->card[i].face_val)
       return 1;
+    if (a->card[i].face_val < b->card[i].face_val)
+      return -1;
   }
   return 0;
 }
@@ -157,9 +160,10 @@ static int compare_high_cards(const struct pokeval_hand_t *a, const struct pokev
 static int compare_one_pair_tiebreak(const struct pokeval_hand_t *a,
                                      const struct pokeval_hand_t *b) {
   int a_pair = 0, b_pair = 0;
-  int a_kickers[3], b_kickers[3];
+  int a_kickers[3] = {0}, b_kickers[3] = {0};
   int a_k = 0, b_k = 0;
 
+  // Assumes hands are already sorted in descending order
   for (int i = 0; i < HAND_SIZE - 1; ++i) {
     if (a->card[i].face_val == a->card[i + 1].face_val) {
       a_pair = a->card[i].face_val;
@@ -173,6 +177,7 @@ static int compare_one_pair_tiebreak(const struct pokeval_hand_t *a,
     }
   }
 
+  // Extract kickers
   for (int i = 0; i < HAND_SIZE; ++i) {
     if (a->card[i].face_val != a_pair)
       a_kickers[a_k++] = a->card[i].face_val;
@@ -180,19 +185,37 @@ static int compare_one_pair_tiebreak(const struct pokeval_hand_t *a,
       b_kickers[b_k++] = b->card[i].face_val;
   }
 
-  if (a_pair > b_pair)
-    return -1;
-  if (a_pair < b_pair)
-    return 1;
-
-  for (int i = 0; i < 3; ++i) {
-    if (a_kickers[i] > b_kickers[i])
-      return -1;
-    if (a_kickers[i] < b_kickers[i])
-      return 1;
+  // Sort kickers descending
+  for (int i = 0; i < 2; ++i) {
+    for (int j = i + 1; j < 3; ++j) {
+      if (a_kickers[j] > a_kickers[i]) {
+        int tmp = a_kickers[i];
+        a_kickers[i] = a_kickers[j];
+        a_kickers[j] = tmp;
+      }
+      if (b_kickers[j] > b_kickers[i]) {
+        int tmp = b_kickers[i];
+        b_kickers[i] = b_kickers[j];
+        b_kickers[j] = tmp;
+      }
+    }
   }
 
-  return 0;
+  // Compare pair
+  if (a_pair > b_pair)
+    return 1;
+  if (a_pair < b_pair)
+    return -1;
+
+  // Compare kickers
+  for (int i = 0; i < 3; ++i) {
+    if (a_kickers[i] > b_kickers[i])
+      return 1;
+    if (a_kickers[i] < b_kickers[i])
+      return -1;
+  }
+
+  return 0; // hands are truly tied
 }
 
 static int compare_two_pair_tiebreak(const struct pokeval_hand_t *a,

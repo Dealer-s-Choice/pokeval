@@ -1,6 +1,7 @@
 cases = [
   'test',
   'compare_hands',
+  'sort_hand',
 ]
 
 foreach test : cases
