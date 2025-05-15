@@ -1,30 +1,17 @@
-#include <deckhandler.h>
-#include <pokeval.h>
-#include <stdio.h>
-#include <string.h>
-
-#undef NDEBUG
-#include <assert.h>
+#include "00_test.h"
 
 #define TEST_HAND(expected_rank, f, s)                                                             \
   do {                                                                                             \
     int faces[HAND_SIZE];                                                                          \
     int suits[HAND_SIZE];                                                                          \
-    static struct hand_t hand;                                                                     \
+    static struct pokeval_hand_t hand;                                                             \
     memcpy(faces, f, sizeof(faces));                                                               \
     memcpy(suits, s, sizeof(suits));                                                               \
     set_hand(&hand, faces, suits);                                                                 \
-    short rank = evaluate_hand(hand);                                                              \
-    fprintf(stderr, "rank: %s\n", ranks[rank]);                                                    \
+    short rank = pokeval_evaluate_hand(hand);                                                      \
+    fprintf(stderr, "rank: %s\n", pokeval_ranks[rank]);                                            \
     assert(rank == expected_rank);                                                                 \
   } while (0)
-
-static void set_hand(struct hand_t *hand, int faces[HAND_SIZE], int suits[HAND_SIZE]) {
-  for (int i = 0; i < HAND_SIZE; ++i) {
-    hand->card[i].face_val = faces[i];
-    hand->card[i].suit = suits[i];
-  }
-}
 
 static void test_static_hands(void) {
   int rf_faces[] = {ACE, KING, QUEEN, JACK, TEN};
@@ -44,36 +31,33 @@ static void test_static_hands(void) {
   TEST_HAND(STRAIGHT, st_faces, st_suits);
 }
 
-int main(int argc, char *argv[]) {
-  (void)argc;
-  (void)argv;
+_MAIN_HEAD_
 
-  int cases[] = {THREE_OF_A_KIND, NOTHING, PAIR, NOTHING, PAIR, PAIR, TWO_PAIR, PAIR};
+int cases[] = {THREE_OF_A_KIND, NOTHING, PAIR, NOTHING, PAIR, PAIR, TWO_PAIR, PAIR};
 
-  struct dh_deck deck;
-  dh_init_deck(&deck);
-  dh_pcg_srand(1, 1);
+struct dh_deck deck;
+dh_init_deck(&deck);
+dh_pcg_srand(1, 1);
 
-  int i;
-  for (size_t t = 0; t < sizeof cases / sizeof cases[0]; t++) {
-    i = 0;
-    dh_shuffle_deck(&deck);
+int i;
+for (size_t t = 0; t < sizeof cases / sizeof cases[0]; t++) {
+  i = 0;
+  dh_shuffle_deck(&deck);
 
-    struct hand_t hand;
-    int k = 0;
-    do {
-      hand.card[k].suit = deck.card[i].suit;
-      hand.card[k].face_val = deck.card[i].face_val;
+  struct pokeval_hand_t hand;
+  int k = 0;
+  do {
+    hand.card[k].suit = deck.card[i].suit;
+    hand.card[k].face_val = deck.card[i].face_val;
 
-      i++;
-    } while (++k < HAND_SIZE);
+    i++;
+  } while (++k < HAND_SIZE);
 
-    short rank = evaluate_hand(hand);
-    fprintf(stderr, "rank: %s\n", ranks[rank]);
-    assert(rank == cases[t]);
-  }
-
-  test_static_hands();
-
-  return 0;
+  short rank = pokeval_evaluate_hand(hand);
+  fprintf(stderr, "rank: %s\n", pokeval_ranks[rank]);
+  assert(rank == cases[t]);
 }
+
+test_static_hands();
+
+_MAIN_TAIL_

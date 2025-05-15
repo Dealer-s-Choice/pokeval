@@ -1,3 +1,15 @@
-exe = executable('test_01', 'test.c', dependencies: pokeval_dep)
+cases = [
+  'test',
+  'compare_hands',
+]
 
-test('test_01', exe)
+foreach test : cases
+
+  exe = executable(
+    'test_' + test,
+    [test + '.c', '00_test.c'],
+    dependencies: pokeval_dep,
+    override_options: ['b_lto=false'],
+  )
+  test('test_' + test, exe)
+endforeach

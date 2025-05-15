@@ -26,13 +26,15 @@
 
 */
 
-#ifndef __LIB_H
-#define __LIB_H
+#ifndef __POKEVAL_H
+#define __POKEVAL_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 #include <stdbool.h>
+#include <stddef.h>
 
 #include "deckhandler.h"
 
@@ -52,13 +54,23 @@ typedef enum {
   NUM_HAND_RANKS
 } hand_rank_t;
 
-extern const char *ranks[NUM_HAND_RANKS];
+extern const char *pokeval_ranks[NUM_HAND_RANKS];
 
-struct hand_t {
+struct pokeval_hand_t {
   struct dh_card card[HAND_SIZE];
 };
 
-short evaluate_hand(struct hand_t hand);
+struct pokeval_need_comparing_t {
+  bool won;
+  int8_t id;
+  struct pokeval_hand_t hand;
+};
+
+short pokeval_evaluate_hand(struct pokeval_hand_t hand);
+
+// Returns the number of winners and fills `winners` with their indices.
+// `winners` must have at least `count` elements allocated by the caller.
+uint8_t pokeval_compare_hands(struct pokeval_need_comparing_t *hands, const uint8_t count);
 
 #ifdef __cplusplus
 }
