@@ -42,6 +42,8 @@ const char *pokeval_ranks[NUM_HAND_RANKS] = {[NOTHING] = "Nothing",
                                              [STRAIGHT_FLUSH] = "Straight Flush",
                                              [ROYAL_FLUSH] = "Royal Flush"};
 
+static inline int face_rank(int val) { return (val == ACE) ? 14 : val; }
+
 static int count_face(const struct pokeval_hand_t *hand, int face_val) {
   int count = 0;
   for (int i = 0; i < HAND_SIZE; ++i)
@@ -165,27 +167,32 @@ static int compare_one_pair_tiebreak(const struct pokeval_hand_t *a,
 
   // Assumes hands are already sorted in descending order
   for (int i = 0; i < HAND_SIZE - 1; ++i) {
-    if (a->card[i].face_val == a->card[i + 1].face_val) {
-      a_pair = a->card[i].face_val;
+    if (face_rank(a->card[i].face_val) == face_rank(a->card[i + 1].face_val)) {
+      a_pair = face_rank(a->card[i].face_val);
       break;
     }
   }
   for (int i = 0; i < HAND_SIZE - 1; ++i) {
-    if (b->card[i].face_val == b->card[i + 1].face_val) {
-      b_pair = b->card[i].face_val;
+    if (face_rank(b->card[i].face_val) == face_rank(b->card[i + 1].face_val)) {
+      b_pair = face_rank(b->card[i].face_val);
       break;
     }
   }
 
   // Extract kickers
   for (int i = 0; i < HAND_SIZE; ++i) {
-    if (a->card[i].face_val != a_pair)
-      a_kickers[a_k++] = a->card[i].face_val;
-    if (b->card[i].face_val != b_pair)
-      b_kickers[b_k++] = b->card[i].face_val;
+    int val_a = face_rank(a->card[i].face_val);
+    int val_b = face_rank(b->card[i].face_val);
+
+    if (val_a != a_pair && a_k < 3) {
+      a_kickers[a_k++] = val_a;
+    }
+    if (val_b != b_pair && b_k < 3) {
+      b_kickers[b_k++] = val_b;
+    }
   }
 
-  // Sort kickers descending
+  // Sort kickers descending (simple selection sort for 3 elements)
   for (int i = 0; i < 2; ++i) {
     for (int j = i + 1; j < 3; ++j) {
       if (a_kickers[j] > a_kickers[i]) {
@@ -201,6 +208,10 @@ static int compare_one_pair_tiebreak(const struct pokeval_hand_t *a,
     }
   }
 
+  // fprintf(stderr, "a_pair=%d b_pair=%d\n", a_pair, b_pair);
+  // fprintf(stderr, "a_kickers = %d %d %d\n", a_kickers[0], a_kickers[1], a_kickers[2]);
+  // fprintf(stderr, "b_kickers = %d %d %d\n", b_kickers[0], b_kickers[1], b_kickers[2]);
+
   // Compare pair
   if (a_pair > b_pair)
     return 1;
@@ -215,7 +226,7 @@ static int compare_one_pair_tiebreak(const struct pokeval_hand_t *a,
       return -1;
   }
 
-  return 0; // hands are truly tied
+  return 0; // hands are tied
 }
 
 static int compare_two_pair_tiebreak(const struct pokeval_hand_t *a,
@@ -275,6 +286,10 @@ static int compare_two_pair_tiebreak(const struct pokeval_hand_t *a,
 }
 
 uint8_t pokeval_compare_hands(struct pokeval_need_comparing_t *need_comparing, uint8_t count) {
+  for (size_t i = 0; i < count; ++i) {
+    sort_hand(&need_comparing[i].hand);
+  }
+
   uint8_t num_winners = 0;
   short best_rank = -1;
   struct pokeval_hand_t best_hand = {0};
@@ -294,8 +309,8 @@ uint8_t pokeval_compare_hands(struct pokeval_need_comparing_t *need_comparing, u
     } else if (rank == best_rank) {
       struct pokeval_hand_t a = best_hand;
       struct pokeval_hand_t b = current_hand;
-      sort_hand(&a);
-      sort_hand(&b);
+      // sort_hand(&a);
+      // sort_hand(&b);
 
       bool b_wins = false;
       bool tie = false;
@@ -381,7 +396,7 @@ uint8_t pokeval_compare_hands(struct pokeval_need_comparing_t *need_comparing, u
         int cmp = compare_one_pair_tiebreak(&a, &b);
         if (cmp == 0)
           tie = true;
-        else if (cmp > 0)
+        else if (cmp < 0)
           b_wins = true;
         break;
       }

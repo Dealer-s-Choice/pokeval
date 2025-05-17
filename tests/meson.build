@@ -1,6 +1,7 @@
 cases = [
   'test',
   'compare_hands',
+  'pair',
   'sort_hand',
 ]
 
