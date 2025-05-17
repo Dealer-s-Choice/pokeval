@@ -35,8 +35,7 @@ _MAIN_HEAD_
 
 int cases[] = {THREE_OF_A_KIND, NOTHING, PAIR, NOTHING, PAIR, PAIR, TWO_PAIR, PAIR};
 
-struct dh_deck deck;
-dh_init_deck(&deck);
+struct dh_deck deck = dh_get_new_deck();
 dh_pcg_srand(1, 1);
 
 int i;
