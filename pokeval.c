@@ -68,8 +68,6 @@ void sort_hand(struct pokeval_hand_t *hand) {
   }
 }
 
-static int compare_faces(const void *a, const void *b) { return (*(int *)a - *(int *)b); }
-
 static bool is_straight(struct pokeval_hand_t *hand) {
   int faces[HAND_SIZE];
   for (int i = 0; i < HAND_SIZE; ++i) {
