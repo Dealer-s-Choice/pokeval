@@ -371,7 +371,7 @@ uint8_t pokeval_compare_hands(struct pokeval_need_comparing_t *need_comparing, u
         int cmp = compare_high_cards(&a, &b);
         if (cmp == 0)
           tie = true;
-        else if (cmp > 0)
+        else if (cmp < 0)
           b_wins = true;
         break;
       }
