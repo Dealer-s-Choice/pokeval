@@ -3,6 +3,7 @@ cases = [
   'compare_hands',
   'nothing',
   'pair',
+  'straight',
   'sort_hand',
 ]
 

@@ -12,7 +12,7 @@ struct pokeval_hand_t hand = {.card = {
 
 sort_hand(&hand);
 
-int expected[] = {ACE, KING, TEN, FIVE, THREE};
+int expected[] = {PKEV_ACE, KING, TEN, FIVE, THREE};
 for (int i = 0; i < HAND_SIZE; ++i) {
   fprintf(stderr, "card: %d | ", hand.card[i].face_val);
   assert(hand.card[i].face_val == expected[i]);

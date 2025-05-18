@@ -40,6 +40,8 @@ extern "C" {
 
 #define HAND_SIZE 5
 
+#define PKEV_ACE (KING + 1)
+
 typedef enum {
   NOTHING,
   PAIR,
