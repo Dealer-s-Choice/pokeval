@@ -74,7 +74,7 @@ static bool is_straight(struct pokeval_hand_t *hand) {
     faces[i] = hand->card[i].face_val;
     //fprintf(stderr, "face_val: %d | ", faces[i]);
   }
-  putchar('\n');
+  // putchar('\n');
 
   if (faces[0] == PKEV_ACE && faces[1] == FIVE && faces[2] == FOUR &&
       faces[3] == THREE && faces[4] == TWO) {
