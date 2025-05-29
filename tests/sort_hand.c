@@ -3,16 +3,16 @@
 _MAIN_HEAD_
 
 struct pokeval_hand_t hand = {.card = {
-                                  {TEN, HEARTS},
-                                  {THREE, CLUBS},
-                                  {ACE, DIAMONDS},
-                                  {FIVE, SPADES},
-                                  {KING, CLUBS},
+                                  {DH_CARD_TEN, DH_SUIT_HEARTS},
+                                  {DH_CARD_THREE, DH_SUIT_CLUBS},
+                                  {DH_CARD_ACE, DH_SUIT_DIAMONDS},
+                                  {DH_CARD_FIVE, DH_SUIT_SPADES},
+                                  {DH_CARD_KING, DH_SUIT_CLUBS},
                               }};
 
 sort_hand(&hand);
 
-int expected[] = {PKEV_ACE, KING, TEN, FIVE, THREE};
+int expected[] = {PKEV_ACE, DH_CARD_KING, DH_CARD_TEN, DH_CARD_FIVE, DH_CARD_THREE};
 for (int i = 0; i < HAND_SIZE; ++i) {
   fprintf(stderr, "card: %d | ", hand.card[i].face_val);
   assert(hand.card[i].face_val == expected[i]);

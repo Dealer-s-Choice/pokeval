@@ -40,7 +40,7 @@ extern "C" {
 
 #define HAND_SIZE 5
 
-#define PKEV_ACE (KING + 1)
+#define PKEV_ACE (DH_CARD_KING + 1)
 
 typedef enum {
   NOTHING,
@@ -59,7 +59,7 @@ typedef enum {
 extern const char *pokeval_ranks[NUM_HAND_RANKS];
 
 struct pokeval_hand_t {
-  struct dh_card card[HAND_SIZE];
+  DH_Card card[HAND_SIZE];
 };
 
 struct pokeval_need_comparing_t {

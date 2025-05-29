@@ -3,14 +3,14 @@
 _MAIN_HEAD_
 
 struct pokeval_hand_t ranked[] = {
-    {{{QUEEN, HEARTS}, {TEN, SPADES}, {NINE, CLUBS}, {KING, DIAMONDS}, {JACK, HEARTS}}},
-    {{{TEN, SPADES}, {QUEEN, CLUBS}, {JACK, CLUBS}, {KING, DIAMONDS}, {ACE, CLUBS}}},
-    {{{FIVE, SPADES}, {TWO, CLUBS}, {THREE, CLUBS}, {FOUR, DIAMONDS}, {ACE, CLUBS}}},
+    {{{DH_CARD_QUEEN, DH_SUIT_HEARTS}, {DH_CARD_TEN, DH_SUIT_SPADES}, {DH_CARD_NINE, DH_SUIT_CLUBS}, {DH_CARD_KING, DH_SUIT_DIAMONDS}, {DH_CARD_JACK, DH_SUIT_HEARTS}}},
+    {{{DH_CARD_TEN, DH_SUIT_SPADES}, {DH_CARD_QUEEN, DH_SUIT_CLUBS}, {DH_CARD_JACK, DH_SUIT_CLUBS}, {DH_CARD_KING, DH_SUIT_DIAMONDS}, {DH_CARD_ACE, DH_SUIT_CLUBS}}},
+    {{{DH_CARD_FIVE, DH_SUIT_SPADES}, {DH_CARD_TWO, DH_SUIT_CLUBS}, {DH_CARD_THREE, DH_SUIT_CLUBS}, {DH_CARD_FOUR, DH_SUIT_DIAMONDS}, {DH_CARD_ACE, DH_SUIT_CLUBS}}},
 };
 
 for (size_t i = 0; i < sizeof ranked / sizeof ranked[0]; i++) {
     int rank = pokeval_evaluate_hand(ranked[i]);
-    fprintf(stderr, "%d:%s\n", i, pokeval_ranks[rank]);
+    fprintf(stderr, "%zd:%s\n", i, pokeval_ranks[rank]);
     assert(rank == STRAIGHT);
   }
 

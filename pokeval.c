@@ -41,7 +41,7 @@ const char *pokeval_ranks[NUM_HAND_RANKS] = {[NOTHING] = "Nothing",
                                              [STRAIGHT_FLUSH] = "Straight Flush",
                                              [ROYAL_FLUSH] = "Royal Flush"};
 
-static inline int face_rank(int val) { return (val == ACE) ? 14 : val; }
+static inline int face_rank(int val) { return (val == DH_CARD_ACE) ? 14 : val; }
 
 static int count_face(const struct pokeval_hand_t *hand, int face_val) {
   int count = 0;
@@ -54,13 +54,13 @@ static int count_face(const struct pokeval_hand_t *hand, int face_val) {
 void sort_hand(struct pokeval_hand_t *hand) {
   for (int i = 0; i < HAND_SIZE - 1; ++i) {
     for (int j = i + 1; j < HAND_SIZE; ++j) {
-      int val_i = (hand->card[i].face_val == ACE) ? PKEV_ACE : hand->card[i].face_val;
-      int val_j = (hand->card[j].face_val == ACE) ? PKEV_ACE : hand->card[j].face_val;
+      int val_i = (hand->card[i].face_val == DH_CARD_ACE) ? PKEV_ACE : hand->card[i].face_val;
+      int val_j = (hand->card[j].face_val == DH_CARD_ACE) ? PKEV_ACE : hand->card[j].face_val;
       hand->card[i].face_val = val_i;
       hand->card[j].face_val = val_j;
 
       if (val_i < val_j) {
-        struct dh_card tmp = hand->card[i];
+        DH_Card tmp = hand->card[i];
         hand->card[i] = hand->card[j];
         hand->card[j] = tmp;
       }
@@ -76,14 +76,14 @@ static bool is_straight(struct pokeval_hand_t *hand) {
   }
   // putchar('\n');
 
-  if (faces[0] == PKEV_ACE && faces[1] == FIVE && faces[2] == FOUR &&
-      faces[3] == THREE && faces[4] == TWO) {
-    // hand->card[0].face_val = ACE;
+  if (faces[0] == PKEV_ACE && faces[1] == DH_CARD_FIVE && faces[2] == DH_CARD_FOUR &&
+      faces[3] == DH_CARD_THREE && faces[4] == DH_CARD_TWO) {
+    // hand->card[0].face_val = DH_CARD_ACE;
     return true;
   }
 
-  if (faces[0] == PKEV_ACE && faces[1] == KING && faces[2] == QUEEN &&
-      faces[3] == JACK && faces[4] == TEN)
+  if (faces[0] == PKEV_ACE && faces[1] == DH_CARD_KING && faces[2] == DH_CARD_QUEEN &&
+      faces[3] == DH_CARD_JACK && faces[4] == DH_CARD_TEN)
     return true;
 
   for (int i = 1; i < HAND_SIZE; ++i)
@@ -325,9 +325,9 @@ uint8_t pokeval_compare_hands(struct pokeval_need_comparing_t *need_comparing, u
       case STRAIGHT: {
         int a_high = a.card[0].face_val;
         int b_high = b.card[0].face_val;
-        if (a_high == PKEV_ACE && a.card[1].face_val == FIVE)
+        if (a_high == PKEV_ACE && a.card[1].face_val == DH_CARD_FIVE)
           a_high = 5;
-        if (b_high == PKEV_ACE && b.card[1].face_val == FIVE)
+        if (b_high == PKEV_ACE && b.card[1].face_val == DH_CARD_FIVE)
           b_high = 5;
         if (a_high == b_high)
           tie = true;

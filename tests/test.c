@@ -14,20 +14,20 @@
   } while (0)
 
 static void test_static_hands(void) {
-  int rf_faces[] = {KING, QUEEN, ACE, JACK, TEN};
-  int rf_suits[] = {HEARTS, HEARTS, HEARTS, HEARTS, HEARTS};
+  int rf_faces[] = {DH_CARD_KING, DH_CARD_QUEEN, DH_CARD_ACE, DH_CARD_JACK, DH_CARD_TEN};
+  int rf_suits[] = {DH_SUIT_HEARTS, DH_SUIT_HEARTS, DH_SUIT_HEARTS, DH_SUIT_HEARTS, DH_SUIT_HEARTS};
   TEST_HAND(ROYAL_FLUSH, rf_faces, rf_suits);
 
-  int fh_faces[] = {ACE, ACE, ACE, JACK, JACK};
-  int fh_suits[] = {HEARTS, CLUBS, DIAMONDS, SPADES, HEARTS};
+  int fh_faces[] = {DH_CARD_ACE, DH_CARD_ACE, DH_CARD_ACE, DH_CARD_JACK, DH_CARD_JACK};
+  int fh_suits[] = {DH_SUIT_HEARTS, DH_SUIT_CLUBS, DH_SUIT_DIAMONDS, DH_SUIT_SPADES, DH_SUIT_HEARTS};
   TEST_HAND(FULL_HOUSE, fh_faces, fh_suits);
 
-  int fl_faces[] = {ACE, THREE, EIGHT, JACK, QUEEN};
-  int fl_suits[] = {HEARTS, HEARTS, HEARTS, HEARTS, HEARTS};
+  int fl_faces[] = {DH_CARD_ACE, DH_CARD_THREE, DH_CARD_EIGHT, DH_CARD_JACK, DH_CARD_QUEEN};
+  int fl_suits[] = {DH_SUIT_HEARTS, DH_SUIT_HEARTS, DH_SUIT_HEARTS, DH_SUIT_HEARTS, DH_SUIT_HEARTS};
   TEST_HAND(FLUSH, fl_faces, fl_suits);
 
-  int st_faces[] = {TWO, FOUR, THREE, ACE, FIVE};
-  int st_suits[] = {HEARTS, HEARTS, CLUBS, HEARTS, SPADES};
+  int st_faces[] = {DH_CARD_TWO, DH_CARD_FOUR, DH_CARD_THREE, DH_CARD_ACE, DH_CARD_FIVE};
+  int st_suits[] = {DH_SUIT_HEARTS, DH_SUIT_HEARTS, DH_SUIT_CLUBS, DH_SUIT_HEARTS, DH_SUIT_SPADES};
   TEST_HAND(STRAIGHT, st_faces, st_suits);
 }
 
@@ -35,13 +35,13 @@ _MAIN_HEAD_
 
 int cases[] = {THREE_OF_A_KIND, NOTHING, PAIR, NOTHING, PAIR, PAIR, TWO_PAIR, PAIR};
 
-struct dh_deck deck = dh_get_new_deck();
-dh_pcg_srand(1, 1);
+DH_Deck deck = DH_get_new_deck();
+DH_pcg_srand(1, 1);
 
 int i;
 for (size_t t = 0; t < sizeof cases / sizeof cases[0]; t++) {
   i = 0;
-  dh_shuffle_deck(&deck);
+  DH_shuffle_deck(&deck);
 
   struct pokeval_hand_t hand;
   int k = 0;

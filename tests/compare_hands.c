@@ -4,11 +4,11 @@ _MAIN_HEAD_
 
 struct pokeval_hand_t hands1[3] = {
     // Hand 0: Full House (Aces over Kings)
-    {{{ACE, HEARTS}, {ACE, SPADES}, {KING, CLUBS}, {KING, DIAMONDS}, {ACE, CLUBS}}},
+    {{{DH_CARD_ACE, DH_SUIT_HEARTS}, {DH_CARD_ACE, DH_SUIT_SPADES}, {DH_CARD_KING, DH_SUIT_CLUBS}, {DH_CARD_KING, DH_SUIT_DIAMONDS}, {DH_CARD_ACE, DH_SUIT_CLUBS}}},
     // Hand 1: Straight Flush (5-6-7-8-9 of Spades)
-    {{{FIVE, SPADES}, {SIX, SPADES}, {SEVEN, SPADES}, {EIGHT, SPADES}, {NINE, SPADES}}},
+    {{{DH_CARD_FIVE, DH_SUIT_SPADES}, {DH_CARD_SIX, DH_SUIT_SPADES}, {DH_CARD_SEVEN, DH_SUIT_SPADES}, {DH_CARD_EIGHT, DH_SUIT_SPADES}, {DH_CARD_NINE, DH_SUIT_SPADES}}},
     // Hand 2: Four of a Kind (Queens)
-    {{{QUEEN, HEARTS}, {QUEEN, SPADES}, {QUEEN, CLUBS}, {QUEEN, DIAMONDS}, {TWO, HEARTS}}},
+    {{{DH_CARD_QUEEN, DH_SUIT_HEARTS}, {DH_CARD_QUEEN, DH_SUIT_SPADES}, {DH_CARD_QUEEN, DH_SUIT_CLUBS}, {DH_CARD_QUEEN, DH_SUIT_DIAMONDS}, {DH_CARD_TWO, DH_SUIT_HEARTS}}},
 };
 
 struct pokeval_need_comparing_t need_comparing1[3] = {
@@ -33,11 +33,11 @@ for (size_t i = 0; i < 3; ++i) {
 
 struct pokeval_hand_t hands2[3] = {
     // Hand 0: Four of a Kind (Queens)
-    {{{QUEEN, HEARTS}, {QUEEN, SPADES}, {QUEEN, CLUBS}, {QUEEN, DIAMONDS}, {TWO, HEARTS}}},
+    {{{DH_CARD_QUEEN, DH_SUIT_HEARTS}, {DH_CARD_QUEEN, DH_SUIT_SPADES}, {DH_CARD_QUEEN, DH_SUIT_CLUBS}, {DH_CARD_QUEEN, DH_SUIT_DIAMONDS}, {DH_CARD_TWO, DH_SUIT_HEARTS}}},
     // Hand 1: Straight (5-6-7-8-9 of Clubs)
-    {{{FIVE, CLUBS}, {SIX, CLUBS}, {SEVEN, CLUBS}, {EIGHT, CLUBS}, {NINE, CLUBS}}},
+    {{{DH_CARD_FIVE, DH_SUIT_CLUBS}, {DH_CARD_SIX, DH_SUIT_CLUBS}, {DH_CARD_SEVEN, DH_SUIT_CLUBS}, {DH_CARD_EIGHT, DH_SUIT_CLUBS}, {DH_CARD_NINE, DH_SUIT_CLUBS}}},
     // Hand 2: Straight (5-6-7-8-9 of Spades)
-    {{{FIVE, SPADES}, {SEVEN, SPADES}, {EIGHT, SPADES}, {NINE, SPADES}, {SIX, SPADES}}},
+    {{{DH_CARD_FIVE, DH_SUIT_SPADES}, {DH_CARD_SEVEN, DH_SUIT_SPADES}, {DH_CARD_EIGHT, DH_SUIT_SPADES}, {DH_CARD_NINE, DH_SUIT_SPADES}, {DH_CARD_SIX, DH_SUIT_SPADES}}},
 };
 
 struct pokeval_need_comparing_t need_comparing2[3] = {
