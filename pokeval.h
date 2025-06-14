@@ -38,43 +38,43 @@ extern "C" {
 
 #include "deckhandler.h"
 
-#define HAND_SIZE 5
+#define POKEVAL_HAND_SIZE 5
 
-#define PKEV_ACE (DH_CARD_KING + 1)
+#define POKEVAL_ACE (DH_CARD_KING + 1)
 
 typedef enum {
-  HIGH_CARD,
-  PAIR,
-  TWO_PAIR,
-  THREE_OF_A_KIND,
-  STRAIGHT,
-  FLUSH,
-  FULL_HOUSE,
-  FOUR_OF_A_KIND,
-  STRAIGHT_FLUSH,
-  ROYAL_FLUSH,
+  POKEVAL_HIGH_CARD,
+  POKEVAL_PAIR,
+  POKEVAL_TWO_PAIR,
+  POKEVAL_THREE_OF_A_KIND,
+  POKEVAL_STRAIGHT,
+  POKEVAL_FLUSH,
+  POKEVAL_FULL_HOUSE,
+  POKEVAL_FOUR_OF_A_KIND,
+  POKEVAL_STRAIGHT_FLUSH,
+  POKEVAL_ROYAL_FLUSH,
   NUM_HAND_RANKS
 } hand_rank_t;
 
-extern const char *pokeval_ranks[NUM_HAND_RANKS];
+extern const char *POKEVAL_rank[NUM_HAND_RANKS];
 
-struct pokeval_hand_t {
-  DH_Card card[HAND_SIZE];
-};
+typedef struct  {
+  DH_Card card[POKEVAL_HAND_SIZE];
+} POKEVAL_Hand;
 
-struct pokeval_need_comparing_t {
+typedef struct {
   bool won;
   int8_t id;
-  struct pokeval_hand_t hand;
-};
+  POKEVAL_Hand hand;
+} POKEVAL_NeedComparing;
 
-void sort_hand(struct pokeval_hand_t *hand);
+void sort_hand(POKEVAL_Hand *hand);
 
-short pokeval_evaluate_hand(struct pokeval_hand_t hand);
+short POKEVAL_evaluate_hand(POKEVAL_Hand hand);
 
 // Returns the number of winners and fills `winners` with their indices.
 // `winners` must have at least `count` elements allocated by the caller.
-uint8_t pokeval_compare_hands(struct pokeval_need_comparing_t *hands, const uint8_t count);
+uint8_t POKEVAL_compare_hands(POKEVAL_NeedComparing *hands, const uint8_t count);
 
 #ifdef __cplusplus
 }

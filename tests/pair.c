@@ -2,7 +2,7 @@
 
 _MAIN_HEAD_
 
-struct pokeval_hand_t hands[] = {
+POKEVAL_Hand hands[] = {
     // Kings vs Queens
     {{{DH_CARD_QUEEN, DH_SUIT_HEARTS}, {DH_CARD_TEN, DH_SUIT_SPADES}, {DH_CARD_QUEEN, DH_SUIT_CLUBS}, {DH_CARD_THREE, DH_SUIT_DIAMONDS}, {DH_CARD_FOUR, DH_SUIT_HEARTS}}},
     {{{DH_CARD_TWO, DH_SUIT_SPADES}, {DH_CARD_KING, DH_SUIT_CLUBS}, {DH_CARD_SEVEN, DH_SUIT_CLUBS}, {DH_CARD_KING, DH_SUIT_DIAMONDS}, {DH_CARD_NINE, DH_SUIT_CLUBS}}},
@@ -27,13 +27,13 @@ size_t num_hands = sizeof hands / sizeof hands[0];
 assert(num_hands % 3 == 0); // Make sure the total is a multiple of 3
 
 for (size_t i = 0; i < num_hands; i += 3) {
-  struct pokeval_need_comparing_t need_comparing[3] = {
+  POKEVAL_NeedComparing need_comparing[3] = {
       {.id = 0, .hand = hands[i]},
       {.id = 1, .hand = hands[i + 1]},
       {.id = 2, .hand = hands[i + 2]},
   };
 
-  int n_wins = pokeval_compare_hands(need_comparing, 3);
+  int n_wins = POKEVAL_compare_hands(need_comparing, 3);
   fprintf(stderr, "winners: %d\n", n_wins);
 
   for (int j = 0; j < 3; ++j) {

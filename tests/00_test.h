@@ -18,4 +18,4 @@
   return 0;                                                                                        \
   }
 
-void set_hand(struct pokeval_hand_t *hand, int faces[HAND_SIZE], int suits[HAND_SIZE]);
+void set_hand(POKEVAL_Hand *hand, int faces[POKEVAL_HAND_SIZE], int suits[POKEVAL_HAND_SIZE]);

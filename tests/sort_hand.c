@@ -2,7 +2,7 @@
 
 _MAIN_HEAD_
 
-struct pokeval_hand_t hand = {.card = {
+POKEVAL_Hand hand = {.card = {
                                   {DH_CARD_TEN, DH_SUIT_HEARTS},
                                   {DH_CARD_THREE, DH_SUIT_CLUBS},
                                   {DH_CARD_ACE, DH_SUIT_DIAMONDS},
@@ -12,8 +12,8 @@ struct pokeval_hand_t hand = {.card = {
 
 sort_hand(&hand);
 
-int expected[] = {PKEV_ACE, DH_CARD_KING, DH_CARD_TEN, DH_CARD_FIVE, DH_CARD_THREE};
-for (int i = 0; i < HAND_SIZE; ++i) {
+int expected[] = {POKEVAL_ACE, DH_CARD_KING, DH_CARD_TEN, DH_CARD_FIVE, DH_CARD_THREE};
+for (int i = 0; i < POKEVAL_HAND_SIZE; ++i) {
   fprintf(stderr, "card: %d | ", hand.card[i].face_val);
   assert(hand.card[i].face_val == expected[i]);
 }

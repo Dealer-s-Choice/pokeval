@@ -2,42 +2,42 @@
 
 _MAIN_HEAD_
 
-struct pokeval_hand_t ranked[] = {
+POKEVAL_Hand ranked[] = {
     {{{DH_CARD_QUEEN, DH_SUIT_HEARTS}, {DH_CARD_TEN, DH_SUIT_SPADES}, {DH_CARD_ACE, DH_SUIT_CLUBS}, {DH_CARD_THREE, DH_SUIT_DIAMONDS}, {DH_CARD_FOUR, DH_SUIT_HEARTS}}},
     {{{DH_CARD_ACE, DH_SUIT_SPADES}, {DH_CARD_KING, DH_SUIT_CLUBS}, {DH_CARD_SEVEN, DH_SUIT_CLUBS}, {DH_CARD_FIVE, DH_SUIT_DIAMONDS}, {DH_CARD_NINE, DH_SUIT_CLUBS}}},
     {{{DH_CARD_TWO, DH_SUIT_SPADES}, {DH_CARD_ACE, DH_SUIT_CLUBS}, {DH_CARD_SEVEN, DH_SUIT_CLUBS}, {DH_CARD_KING, DH_SUIT_DIAMONDS}, {DH_CARD_NINE, DH_SUIT_CLUBS}}},
 };
 
 for (size_t i = 0; i < sizeof ranked / sizeof ranked[0]; i++)
-    assert(pokeval_evaluate_hand(ranked[i]) == HIGH_CARD);
+    assert(POKEVAL_evaluate_hand(ranked[i]) == POKEVAL_HIGH_CARD);
 
-struct pokeval_need_comparing_t need_comparing[3] = {
+POKEVAL_NeedComparing need_comparing[3] = {
   {.id = 0, .hand = ranked[0]},
   {.id = 1, .hand = ranked[1]},
   {.id = 2, .hand = ranked[2]},
 };
 
-int n_wins = pokeval_compare_hands(need_comparing, 3);
+int n_wins = POKEVAL_compare_hands(need_comparing, 3);
 assert(n_wins == 1);
 fprintf(stderr, "winners: %d\n", n_wins);
 assert(need_comparing[1].won);
 
-struct pokeval_hand_t ranked2[] = {
+POKEVAL_Hand ranked2[] = {
     {{{DH_CARD_QUEEN, DH_SUIT_HEARTS}, {DH_CARD_TEN, DH_SUIT_SPADES}, {DH_CARD_ACE, DH_SUIT_CLUBS}, {DH_CARD_THREE, DH_SUIT_DIAMONDS}, {DH_CARD_FOUR, DH_SUIT_HEARTS}}},
     {{{DH_CARD_TEN, DH_SUIT_SPADES}, {DH_CARD_KING, DH_SUIT_CLUBS}, {DH_CARD_SEVEN, DH_SUIT_CLUBS}, {DH_CARD_FIVE, DH_SUIT_DIAMONDS}, {DH_CARD_NINE, DH_SUIT_CLUBS}}},
     {{{DH_CARD_TWO, DH_SUIT_SPADES}, {DH_CARD_ACE, DH_SUIT_CLUBS}, {DH_CARD_SEVEN, DH_SUIT_CLUBS}, {DH_CARD_KING, DH_SUIT_DIAMONDS}, {DH_CARD_NINE, DH_SUIT_CLUBS}}},
 };
 
 for (size_t i = 0; i < sizeof ranked2 / sizeof ranked2[0]; i++)
-    assert(pokeval_evaluate_hand(ranked2[i]) == HIGH_CARD);
+    assert(POKEVAL_evaluate_hand(ranked2[i]) == POKEVAL_HIGH_CARD);
 
-struct pokeval_need_comparing_t need_comparing2[3] = {
+POKEVAL_NeedComparing need_comparing2[3] = {
   {.id = 0, .hand = ranked2[0]},
   {.id = 1, .hand = ranked2[1]},
   {.id = 2, .hand = ranked2[2]},
 };
 
-n_wins = pokeval_compare_hands(need_comparing2, 3);
+n_wins = POKEVAL_compare_hands(need_comparing2, 3);
 assert(n_wins == 1);
 fprintf(stderr, "winners: %d\n", n_wins);
 assert(need_comparing2[2].won);

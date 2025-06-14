@@ -2,7 +2,7 @@
 
 _MAIN_HEAD_
 
-struct pokeval_hand_t hands1[3] = {
+POKEVAL_Hand hands1[3] = {
     // Hand 0: Full House (Aces over Kings)
     {{{DH_CARD_ACE, DH_SUIT_HEARTS}, {DH_CARD_ACE, DH_SUIT_SPADES}, {DH_CARD_KING, DH_SUIT_CLUBS}, {DH_CARD_KING, DH_SUIT_DIAMONDS}, {DH_CARD_ACE, DH_SUIT_CLUBS}}},
     // Hand 1: Straight Flush (5-6-7-8-9 of Spades)
@@ -11,13 +11,13 @@ struct pokeval_hand_t hands1[3] = {
     {{{DH_CARD_QUEEN, DH_SUIT_HEARTS}, {DH_CARD_QUEEN, DH_SUIT_SPADES}, {DH_CARD_QUEEN, DH_SUIT_CLUBS}, {DH_CARD_QUEEN, DH_SUIT_DIAMONDS}, {DH_CARD_TWO, DH_SUIT_HEARTS}}},
 };
 
-struct pokeval_need_comparing_t need_comparing1[3] = {
+POKEVAL_NeedComparing need_comparing1[3] = {
     {.id = 0, .hand = hands1[0]},
     {.id = 1, .hand = hands1[1]},
     {.id = 2, .hand = hands1[2]},
 };
 
-uint8_t n_wins = pokeval_compare_hands(need_comparing1, 3);
+uint8_t n_wins = POKEVAL_compare_hands(need_comparing1, 3);
 fprintf(stderr, "winners: %d\n", n_wins);
 assert(n_wins == 1);
 assert(need_comparing1[0].won == false);
@@ -31,7 +31,7 @@ for (size_t i = 0; i < 3; ++i) {
 
 // --- Second test with tie between two straights ---
 
-struct pokeval_hand_t hands2[3] = {
+POKEVAL_Hand hands2[3] = {
     // Hand 0: Four of a Kind (Queens)
     {{{DH_CARD_QUEEN, DH_SUIT_HEARTS}, {DH_CARD_QUEEN, DH_SUIT_SPADES}, {DH_CARD_QUEEN, DH_SUIT_CLUBS}, {DH_CARD_QUEEN, DH_SUIT_DIAMONDS}, {DH_CARD_TWO, DH_SUIT_HEARTS}}},
     // Hand 1: Straight (5-6-7-8-9 of Clubs)
@@ -40,13 +40,13 @@ struct pokeval_hand_t hands2[3] = {
     {{{DH_CARD_FIVE, DH_SUIT_SPADES}, {DH_CARD_SEVEN, DH_SUIT_SPADES}, {DH_CARD_EIGHT, DH_SUIT_SPADES}, {DH_CARD_NINE, DH_SUIT_SPADES}, {DH_CARD_SIX, DH_SUIT_SPADES}}},
 };
 
-struct pokeval_need_comparing_t need_comparing2[3] = {
+POKEVAL_NeedComparing need_comparing2[3] = {
     {.id = 0, .hand = hands2[0]},
     {.id = 1, .hand = hands2[1]},
     {.id = 2, .hand = hands2[2]},
 };
 
-n_wins = pokeval_compare_hands(need_comparing2, 3);
+n_wins = POKEVAL_compare_hands(need_comparing2, 3);
 fprintf(stderr, "winners: %d\n", n_wins);
 assert(n_wins == 2);
 assert(need_comparing2[0].won == false);
