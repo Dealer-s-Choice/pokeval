@@ -33,7 +33,7 @@ static void test_static_hands(void) {
 
 _MAIN_HEAD_
 
-int cases[] = {THREE_OF_A_KIND, NOTHING, PAIR, NOTHING, PAIR, PAIR, TWO_PAIR, PAIR};
+int cases[] = {THREE_OF_A_KIND, HIGH_CARD, PAIR, HIGH_CARD, PAIR, PAIR, TWO_PAIR, PAIR};
 
 DH_Deck deck = DH_get_new_deck();
 DH_pcg_srand(1, 1);

@@ -43,7 +43,7 @@ extern "C" {
 #define PKEV_ACE (DH_CARD_KING + 1)
 
 typedef enum {
-  NOTHING,
+  HIGH_CARD,
   PAIR,
   TWO_PAIR,
   THREE_OF_A_KIND,

@@ -9,7 +9,7 @@ struct pokeval_hand_t ranked[] = {
 };
 
 for (size_t i = 0; i < sizeof ranked / sizeof ranked[0]; i++)
-    assert(pokeval_evaluate_hand(ranked[i]) == NOTHING);
+    assert(pokeval_evaluate_hand(ranked[i]) == HIGH_CARD);
 
 struct pokeval_need_comparing_t need_comparing[3] = {
   {.id = 0, .hand = ranked[0]},
@@ -29,7 +29,7 @@ struct pokeval_hand_t ranked2[] = {
 };
 
 for (size_t i = 0; i < sizeof ranked2 / sizeof ranked2[0]; i++)
-    assert(pokeval_evaluate_hand(ranked2[i]) == NOTHING);
+    assert(pokeval_evaluate_hand(ranked2[i]) == HIGH_CARD);
 
 struct pokeval_need_comparing_t need_comparing2[3] = {
   {.id = 0, .hand = ranked2[0]},

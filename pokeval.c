@@ -30,7 +30,7 @@
 
 #include "pokeval.h"
 
-const char *pokeval_ranks[NUM_HAND_RANKS] = {[NOTHING] = "Nothing",
+const char *pokeval_ranks[NUM_HAND_RANKS] = {[HIGH_CARD] = "High Card",
                                              [PAIR] = "Pair",
                                              [TWO_PAIR] = "Two Pair",
                                              [THREE_OF_A_KIND] = "Three-of-a-Kind",
@@ -134,7 +134,7 @@ short pokeval_evaluate_hand(struct pokeval_hand_t hand) {
   if (pair_count == 2)
     return PAIR;
 
-  return NOTHING;
+  return HIGH_CARD;
 }
 
 static int get_triplet_value(const struct pokeval_hand_t *hand) {
@@ -369,7 +369,7 @@ uint8_t pokeval_compare_hands(struct pokeval_need_comparing_t *need_comparing, u
         break;
       }
       case FLUSH:
-      case NOTHING: {
+      case HIGH_CARD: {
         int cmp = compare_high_cards(&a, &b);
         if (cmp == 0)
           tie = true;
