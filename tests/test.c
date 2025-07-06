@@ -4,7 +4,7 @@
   do {                                                                                             \
     int faces[POKEVAL_HAND_SIZE];                                                                          \
     int suits[POKEVAL_HAND_SIZE];                                                                          \
-    static POKEVAL_Hand hand;                                                             \
+    static POKEVAL_Hand_7 hand;                                                             \
     memcpy(faces, f, sizeof(faces));                                                               \
     memcpy(suits, s, sizeof(suits));                                                               \
     set_hand(&hand, faces, suits);                                                                 \
@@ -43,7 +43,7 @@ for (size_t t = 0; t < sizeof cases / sizeof cases[0]; t++) {
   i = 0;
   DH_shuffle_deck(&deck);
 
-  POKEVAL_Hand hand;
+  POKEVAL_Hand_7 hand;
   int k = 0;
   do {
     hand.card[k].suit = deck.card[i].suit;

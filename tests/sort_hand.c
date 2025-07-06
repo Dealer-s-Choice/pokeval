@@ -2,7 +2,7 @@
 
 _MAIN_HEAD_
 
-POKEVAL_Hand hand = {.card = {
+POKEVAL_Hand_7 hand = {.card = {
                                   {DH_CARD_TEN, DH_SUIT_HEARTS},
                                   {DH_CARD_THREE, DH_SUIT_CLUBS},
                                   {DH_CARD_ACE, DH_SUIT_DIAMONDS},

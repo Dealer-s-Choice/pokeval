@@ -2,7 +2,7 @@
 
 _MAIN_HEAD_
 
-POKEVAL_Hand hands1[3] = {
+POKEVAL_Hand_7 hands1[3] = {
     // Hand 0: Full House (Aces over Kings)
     {{{DH_CARD_ACE, DH_SUIT_HEARTS}, {DH_CARD_ACE, DH_SUIT_SPADES}, {DH_CARD_KING, DH_SUIT_CLUBS}, {DH_CARD_KING, DH_SUIT_DIAMONDS}, {DH_CARD_ACE, DH_SUIT_CLUBS}}},
     // Hand 1: Straight Flush (5-6-7-8-9 of Spades)
@@ -31,7 +31,7 @@ for (size_t i = 0; i < 3; ++i) {
 
 // --- Second test with tie between two straights ---
 
-POKEVAL_Hand hands2[3] = {
+POKEVAL_Hand_7 hands2[3] = {
     // Hand 0: Four of a Kind (Queens)
     {{{DH_CARD_QUEEN, DH_SUIT_HEARTS}, {DH_CARD_QUEEN, DH_SUIT_SPADES}, {DH_CARD_QUEEN, DH_SUIT_CLUBS}, {DH_CARD_QUEEN, DH_SUIT_DIAMONDS}, {DH_CARD_TWO, DH_SUIT_HEARTS}}},
     // Hand 1: Straight (5-6-7-8-9 of Clubs)
