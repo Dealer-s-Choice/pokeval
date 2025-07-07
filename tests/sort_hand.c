@@ -2,13 +2,13 @@
 
 _MAIN_HEAD_
 
-POKEVAL_Hand_7 hand = {.card = {
-                                  {DH_CARD_TEN, DH_SUIT_HEARTS},
-                                  {DH_CARD_THREE, DH_SUIT_CLUBS},
-                                  {DH_CARD_ACE, DH_SUIT_DIAMONDS},
-                                  {DH_CARD_FIVE, DH_SUIT_SPADES},
-                                  {DH_CARD_KING, DH_SUIT_CLUBS},
-                              }};
+POKEVAL_Hand_5 hand = {.card = {
+                           {DH_CARD_TEN, DH_SUIT_HEARTS},
+                           {DH_CARD_THREE, DH_SUIT_CLUBS},
+                           {DH_CARD_ACE, DH_SUIT_DIAMONDS},
+                           {DH_CARD_FIVE, DH_SUIT_SPADES},
+                           {DH_CARD_KING, DH_SUIT_CLUBS},
+                       }};
 
 sort_hand(&hand);
 

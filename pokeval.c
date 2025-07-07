@@ -421,7 +421,7 @@ static uint8_t POKEVAL_compare_hands_5(POKEVAL_NeedComparing *need_comparing, ui
   return num_winners;
 }
 
-static POKEVAL_Hand_5 POKEVAL_hand5_from_hand7(const POKEVAL_Hand_7 *src) {
+POKEVAL_Hand_5 POKEVAL_hand5_from_hand7(const POKEVAL_Hand_7 *src) {
   // Fast path: It's a 5-card hand (cards 5 and/or 6 are DH_card_null)
   if (DH_is_card_null(src->card[5]) || DH_is_card_null(src->card[6])) {
     POKEVAL_Hand_5 dest;
