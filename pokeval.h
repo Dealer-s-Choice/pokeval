@@ -58,23 +58,30 @@ typedef enum {
 
 extern const char *POKEVAL_rank[NUM_HAND_RANKS];
 
-typedef struct  {
-  DH_Card card[POKEVAL_HAND_SIZE];
-} POKEVAL_Hand;
+typedef struct {
+  DH_Card card[5];
+} POKEVAL_Hand_5;
+
+typedef struct {
+  DH_Card card[7];
+} POKEVAL_Hand_7;
 
 typedef struct {
   bool won;
   int8_t id;
-  POKEVAL_Hand hand;
+  POKEVAL_Hand_7 hand;
+  POKEVAL_Hand_5 hand_5;
 } POKEVAL_NeedComparing;
 
-void sort_hand(POKEVAL_Hand *hand);
+void sort_hand(POKEVAL_Hand_5 *hand);
 
-short POKEVAL_evaluate_hand(POKEVAL_Hand hand);
+short POKEVAL_evaluate_hand(POKEVAL_Hand_5 hand);
 
 // Returns the number of winners and fills `winners` with their indices.
 // `winners` must have at least `count` elements allocated by the caller.
 uint8_t POKEVAL_compare_hands(POKEVAL_NeedComparing *hands, const uint8_t count);
+
+POKEVAL_Hand_5 POKEVAL_hand5_from_hand7(const POKEVAL_Hand_7 *src);
 
 #ifdef __cplusplus
 }

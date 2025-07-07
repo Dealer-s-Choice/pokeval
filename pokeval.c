@@ -27,23 +27,24 @@
 */
 
 #include <stdio.h>
+#include <string.h>
 
 #include "pokeval.h"
 
 const char *POKEVAL_rank[NUM_HAND_RANKS] = {[POKEVAL_HIGH_CARD] = "High Card",
-                                             [POKEVAL_PAIR] = "Pair",
-                                             [POKEVAL_TWO_PAIR] = "Two Pair",
-                                             [POKEVAL_THREE_OF_A_KIND] = "Three-of-a-Kind",
-                                             [POKEVAL_STRAIGHT] = "Straight",
-                                             [POKEVAL_FLUSH] = "Flush",
-                                             [POKEVAL_FULL_HOUSE] = "Full House",
-                                             [POKEVAL_FOUR_OF_A_KIND] = "Four-of-a-Kind",
-                                             [POKEVAL_STRAIGHT_FLUSH] = "Straight Flush",
-                                             [POKEVAL_ROYAL_FLUSH] = "Royal Flush"};
+                                            [POKEVAL_PAIR] = "Pair",
+                                            [POKEVAL_TWO_PAIR] = "Two Pair",
+                                            [POKEVAL_THREE_OF_A_KIND] = "Three-of-a-Kind",
+                                            [POKEVAL_STRAIGHT] = "Straight",
+                                            [POKEVAL_FLUSH] = "Flush",
+                                            [POKEVAL_FULL_HOUSE] = "Full House",
+                                            [POKEVAL_FOUR_OF_A_KIND] = "Four-of-a-Kind",
+                                            [POKEVAL_STRAIGHT_FLUSH] = "Straight Flush",
+                                            [POKEVAL_ROYAL_FLUSH] = "Royal Flush"};
 
 static inline int face_rank(int val) { return (val == DH_CARD_ACE) ? 14 : val; }
 
-static int count_face(const POKEVAL_Hand *hand, int face_val) {
+static int count_face(const POKEVAL_Hand_5 *hand, int face_val) {
   int count = 0;
   for (int i = 0; i < POKEVAL_HAND_SIZE; ++i)
     if (hand->card[i].face_val == face_val)
@@ -51,7 +52,7 @@ static int count_face(const POKEVAL_Hand *hand, int face_val) {
   return count;
 }
 
-void sort_hand(POKEVAL_Hand *hand) {
+void sort_hand(POKEVAL_Hand_5 *hand) {
   for (int i = 0; i < POKEVAL_HAND_SIZE - 1; ++i) {
     for (int j = i + 1; j < POKEVAL_HAND_SIZE; ++j) {
       int val_i = (hand->card[i].face_val == DH_CARD_ACE) ? POKEVAL_ACE : hand->card[i].face_val;
@@ -68,11 +69,11 @@ void sort_hand(POKEVAL_Hand *hand) {
   }
 }
 
-static bool is_straight(POKEVAL_Hand *hand) {
+static bool is_straight(POKEVAL_Hand_5 *hand) {
   int faces[POKEVAL_HAND_SIZE];
   for (int i = 0; i < POKEVAL_HAND_SIZE; ++i) {
     faces[i] = hand->card[i].face_val;
-    //fprintf(stderr, "face_val: %d | ", faces[i]);
+    // fprintf(stderr, "face_val: %d | ", faces[i]);
   }
   // putchar('\n');
 
@@ -93,7 +94,7 @@ static bool is_straight(POKEVAL_Hand *hand) {
   return true;
 }
 
-short POKEVAL_evaluate_hand(POKEVAL_Hand hand) {
+short POKEVAL_evaluate_hand(POKEVAL_Hand_5 hand) {
   sort_hand(&hand);
 
   bool flush = true;
@@ -137,21 +138,21 @@ short POKEVAL_evaluate_hand(POKEVAL_Hand hand) {
   return POKEVAL_HIGH_CARD;
 }
 
-static int get_triplet_value(const POKEVAL_Hand *hand) {
+static int get_triplet_value(const POKEVAL_Hand_5 *hand) {
   for (int i = 0; i <= POKEVAL_HAND_SIZE - 3; ++i)
     if (count_face(hand, hand->card[i].face_val) == 3)
       return hand->card[i].face_val;
   return -1;
 }
 
-static int get_quad_value(const POKEVAL_Hand *hand) {
+static int get_quad_value(const POKEVAL_Hand_5 *hand) {
   for (int i = 0; i <= POKEVAL_HAND_SIZE - 4; ++i)
     if (count_face(hand, hand->card[i].face_val) == 4)
       return hand->card[i].face_val;
   return -1;
 }
 
-static int compare_high_cards(const POKEVAL_Hand *a, const POKEVAL_Hand *b) {
+static int compare_high_cards(const POKEVAL_Hand_5 *a, const POKEVAL_Hand_5 *b) {
   for (int i = 0; i < POKEVAL_HAND_SIZE; ++i) {
     if (a->card[i].face_val > b->card[i].face_val)
       return 1;
@@ -161,8 +162,7 @@ static int compare_high_cards(const POKEVAL_Hand *a, const POKEVAL_Hand *b) {
   return 0;
 }
 
-static int compare_one_pair_tiebreak(const POKEVAL_Hand *a,
-                                     const POKEVAL_Hand *b) {
+static int compare_one_pair_tiebreak(const POKEVAL_Hand_5 *a, const POKEVAL_Hand_5 *b) {
   int a_pair = 0, b_pair = 0;
   int a_kickers[3] = {0}, b_kickers[3] = {0};
   int a_k = 0, b_k = 0;
@@ -231,8 +231,7 @@ static int compare_one_pair_tiebreak(const POKEVAL_Hand *a,
   return 0; // hands are tied
 }
 
-static int compare_two_pair_tiebreak(const POKEVAL_Hand *a,
-                                     const POKEVAL_Hand *b) {
+static int compare_two_pair_tiebreak(const POKEVAL_Hand_5 *a, const POKEVAL_Hand_5 *b) {
   int a_high = 0, a_low = 0, a_kicker = 0;
   int b_high = 0, b_low = 0, b_kicker = 0;
 
@@ -287,20 +286,20 @@ static int compare_two_pair_tiebreak(const POKEVAL_Hand *a,
   return 0;
 }
 
-uint8_t POKEVAL_compare_hands(POKEVAL_NeedComparing *need_comparing, uint8_t count) {
+static uint8_t POKEVAL_compare_hands_5(POKEVAL_NeedComparing *need_comparing, uint8_t count) {
   for (size_t i = 0; i < count; ++i) {
-    sort_hand(&need_comparing[i].hand);
+    sort_hand(&need_comparing[i].hand_5);
   }
 
   uint8_t num_winners = 0;
   short best_rank = -1;
-  POKEVAL_Hand best_hand = {0};
+  POKEVAL_Hand_5 best_hand = {0};
   uint8_t winner_indices[count];
 
   // Evaluate all hands and determine the best one(s)
   for (uint8_t i = 0; i < count; ++i) {
     need_comparing[i].won = false;
-    POKEVAL_Hand current_hand = need_comparing[i].hand;
+    POKEVAL_Hand_5 current_hand = need_comparing[i].hand_5;
     short rank = POKEVAL_evaluate_hand(current_hand);
 
     if (rank > best_rank) {
@@ -309,8 +308,8 @@ uint8_t POKEVAL_compare_hands(POKEVAL_NeedComparing *need_comparing, uint8_t cou
       winner_indices[0] = i;
       num_winners = 1;
     } else if (rank == best_rank) {
-      POKEVAL_Hand a = best_hand;
-      POKEVAL_Hand b = current_hand;
+      POKEVAL_Hand_5 a = best_hand;
+      POKEVAL_Hand_5 b = current_hand;
       // sort_hand(&a);
       // sort_hand(&b);
 
@@ -420,4 +419,52 @@ uint8_t POKEVAL_compare_hands(POKEVAL_NeedComparing *need_comparing, uint8_t cou
   }
 
   return num_winners;
+}
+
+POKEVAL_Hand_5 POKEVAL_hand5_from_hand7(const POKEVAL_Hand_7 *src) {
+  // Fast path: It's a 5-card hand (cards 5 and/or 6 are DH_card_null)
+  if (DH_is_card_null(src->card[5]) || DH_is_card_null(src->card[6])) {
+    POKEVAL_Hand_5 dest;
+    for (size_t i = 0; i < 5; ++i) {
+      dest.card[i] = src->card[i];
+    }
+    return dest;
+  }
+
+  // Full 7-card evaluation for stud or hold'em
+  POKEVAL_Hand_5 best_hand = {0};
+  short best_rank = -1;
+  DH_Card temp[5];
+
+  for (size_t i = 0; i < 7; ++i) {
+    for (size_t j = i + 1; j < 7; ++j) {
+      // Build candidate hand by omitting cards i and j
+      size_t k = 0;
+      for (size_t m = 0; m < 7; ++m) {
+        if (m != i && m != j) {
+          temp[k++] = src->card[m];
+        }
+      }
+
+      POKEVAL_Hand_5 candidate = {0};
+      memcpy(candidate.card, temp, sizeof(temp));
+
+      short rank = POKEVAL_evaluate_hand(candidate);
+
+      if (rank > best_rank) {
+        best_rank = rank;
+        best_hand = candidate;
+      }
+      // Optional: exact tie-breaking could be added here
+    }
+  }
+
+  return best_hand;
+}
+
+uint8_t POKEVAL_compare_hands(POKEVAL_NeedComparing *need_comparing, uint8_t count) {
+  for (size_t i = 0; i < count; ++i) {
+    need_comparing[i].hand_5 = POKEVAL_hand5_from_hand7(&need_comparing[i].hand);
+  }
+  return POKEVAL_compare_hands_5(need_comparing, count);
 }

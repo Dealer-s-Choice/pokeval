@@ -5,6 +5,7 @@ cases = [
   'pair',
   'straight',
   'sort_hand',
+  '7-card-hand'
 ]
 
 foreach test : cases

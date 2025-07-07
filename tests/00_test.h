@@ -18,4 +18,4 @@
   return 0;                                                                                        \
   }
 
-void set_hand(POKEVAL_Hand *hand, int faces[POKEVAL_HAND_SIZE], int suits[POKEVAL_HAND_SIZE]);
+void set_hand(POKEVAL_Hand_5 *hand, int faces[POKEVAL_HAND_SIZE], int suits[POKEVAL_HAND_SIZE]);
