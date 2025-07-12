@@ -40,6 +40,7 @@ const char *POKEVAL_rank[NUM_HAND_RANKS] = {[POKEVAL_HIGH_CARD] = "High Card",
                                             [POKEVAL_FULL_HOUSE] = "Full House",
                                             [POKEVAL_FOUR_OF_A_KIND] = "Four-of-a-Kind",
                                             [POKEVAL_STRAIGHT_FLUSH] = "Straight Flush",
+                                            [POKEVAL_FIVE_OF_A_KIND] = "Five-of-a-Kind",
                                             [POKEVAL_ROYAL_FLUSH] = "Royal Flush"};
 
 static inline int face_rank(int val) { return (val == DH_CARD_ACE) ? 14 : val; }
@@ -108,6 +109,9 @@ short POKEVAL_evaluate_hand(POKEVAL_Hand_5 hand) {
     return POKEVAL_ROYAL_FLUSH;
   if (straight && flush)
     return POKEVAL_STRAIGHT_FLUSH;
+  if ((count_face(&hand, hand.card[0].face_val) == 5) ||
+      (count_face(&hand, hand.card[4].face_val) == 5))
+    return POKEVAL_FIVE_OF_A_KIND;
   if ((count_face(&hand, hand.card[0].face_val) == 4) ||
       (count_face(&hand, hand.card[4].face_val) == 4))
     return POKEVAL_FOUR_OF_A_KIND;
@@ -141,6 +145,13 @@ short POKEVAL_evaluate_hand(POKEVAL_Hand_5 hand) {
 static int get_triplet_value(const POKEVAL_Hand_5 *hand) {
   for (int i = 0; i <= POKEVAL_HAND_SIZE - 3; ++i)
     if (count_face(hand, hand->card[i].face_val) == 3)
+      return hand->card[i].face_val;
+  return -1;
+}
+
+static int get_quint_value(const POKEVAL_Hand_5 *hand) {
+  for (int i = 0; i <= POKEVAL_HAND_SIZE - 5; ++i)
+    if (count_face(hand, hand->card[i].face_val) == 5)
       return hand->card[i].face_val;
   return -1;
 }
@@ -209,10 +220,6 @@ static int compare_one_pair_tiebreak(const POKEVAL_Hand_5 *a, const POKEVAL_Hand
       }
     }
   }
-
-  // fprintf(stderr, "a_pair=%d b_pair=%d\n", a_pair, b_pair);
-  // fprintf(stderr, "a_kickers = %d %d %d\n", a_kickers[0], a_kickers[1], a_kickers[2]);
-  // fprintf(stderr, "b_kickers = %d %d %d\n", b_kickers[0], b_kickers[1], b_kickers[2]);
 
   // Compare pair
   if (a_pair > b_pair)
@@ -332,6 +339,15 @@ static uint8_t POKEVAL_compare_hands_5(POKEVAL_NeedComparing *need_comparing, ui
           tie = true;
         else
           b_wins = b_high > a_high;
+        break;
+      }
+      case POKEVAL_FIVE_OF_A_KIND: {
+        int a_quint = get_quint_value(&a);
+        int b_quint = get_quint_value(&b);
+        if (a_quint == b_quint)
+          tie = true;
+        else
+          b_wins = b_quint > a_quint;
         break;
       }
       case POKEVAL_FOUR_OF_A_KIND: {
