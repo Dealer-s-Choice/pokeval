@@ -9,6 +9,9 @@
 
 #include <assert.h>
 
+#define PAD_NULL_CARDS                                                                             \
+  {DH_CARD_NULL, DH_CARD_NULL}, { DH_CARD_NULL, DH_CARD_NULL }
+
 #define _MAIN_HEAD_                                                                                \
   int main(int argc, char *argv[]) {                                                               \
     (void)argc;                                                                                    \

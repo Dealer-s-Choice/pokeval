@@ -6,6 +6,7 @@ cases = [
   'straight',
   'sort_hand',
   '7-card-hand',
+  'four-of-a-kind',
   'five-of-a-kind'
 ]
 

@@ -293,6 +293,14 @@ static int compare_two_pair_tiebreak(const POKEVAL_Hand_5 *a, const POKEVAL_Hand
   return 0;
 }
 
+static int get_kicker_value(const POKEVAL_Hand_5 *hand, int quad_val) {
+  for (int i = 0; i < POKEVAL_HAND_SIZE; ++i) {
+    if (hand->card[i].face_val != quad_val)
+      return hand->card[i].face_val;
+  }
+  return -1; // Should never happen in valid hand
+}
+
 static uint8_t POKEVAL_compare_hands_5(POKEVAL_NeedComparing *need_comparing, uint8_t count) {
   for (size_t i = 0; i < count; ++i) {
     sort_hand(&need_comparing[i].hand_5);
@@ -353,10 +361,18 @@ static uint8_t POKEVAL_compare_hands_5(POKEVAL_NeedComparing *need_comparing, ui
       case POKEVAL_FOUR_OF_A_KIND: {
         int a_quad = get_quad_value(&a);
         int b_quad = get_quad_value(&b);
-        if (a_quad == b_quad)
-          tie = true;
-        else
+
+        int a_kicker = get_kicker_value(&a, a_quad);
+        int b_kicker = get_kicker_value(&b, b_quad);
+
+        if (a_quad == b_quad) {
+          if (a_kicker == b_kicker)
+            tie = true;
+          else
+            b_wins = b_kicker > a_kicker;
+        } else {
           b_wins = b_quad > a_quad;
+        }
         break;
       }
       case POKEVAL_FULL_HOUSE: {
