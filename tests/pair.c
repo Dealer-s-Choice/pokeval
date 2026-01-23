@@ -81,7 +81,7 @@ for (size_t i = 0; i < num_hands; i += 3) {
       {.id = 2, .hand = hands[i + 2]},
   };
 
-  int n_wins = POKEVAL_compare_hands(need_comparing, 3);
+  int n_wins = POKEVAL_compare_hands(need_comparing, 3, false);
   fprintf(stderr, "winners: %d\n", n_wins);
 
   for (int j = 0; j < 3; ++j) {

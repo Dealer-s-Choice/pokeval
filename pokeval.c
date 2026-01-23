@@ -494,9 +494,98 @@ POKEVAL_Hand_5 POKEVAL_hand5_from_hand7(const POKEVAL_Hand_7 *src) {
   return best_hand;
 }
 
-uint8_t POKEVAL_compare_hands(POKEVAL_NeedComparing *need_comparing, uint8_t count) {
+static inline int lowball_value(int face) { return (face == DH_CARD_ACE) ? 1 : face; }
+
+static void sort_hand_lowball(POKEVAL_Hand_5 *hand) {
+  for (int i = 0; i < POKEVAL_HAND_SIZE - 1; ++i) {
+    for (int j = i + 1; j < POKEVAL_HAND_SIZE; ++j) {
+
+      int val_i = lowball_value(hand->card[i].face_val);
+      int val_j = lowball_value(hand->card[j].face_val);
+
+      // ascending (low wins)
+      if (val_i > val_j) {
+        DH_Card tmp = hand->card[i];
+        hand->card[i] = hand->card[j];
+        hand->card[j] = tmp;
+      }
+    }
+  }
+}
+
+static int compare_lowball_5(const POKEVAL_Hand_5 *a, const POKEVAL_Hand_5 *b) {
+  // assumes both hands are sorted low → high with Ace = 1
+
+  // 1) classify by duplicates
+  int a_counts[15] = {0};
+  int b_counts[15] = {0};
+
+  for (int i = 0; i < 5; ++i) {
+    a_counts[a->card[i].face_val]++;
+    b_counts[b->card[i].face_val]++;
+  }
+
+  int a_max = 0, b_max = 0;
+  for (int v = 1; v <= 14; ++v) {
+    if (a_counts[v] > a_max)
+      a_max = a_counts[v];
+    if (b_counts[v] > b_max)
+      b_max = b_counts[v];
+  }
+
+  // lower duplicate count is better
+  if (a_max != b_max)
+    return (a_max < b_max) ? -1 : 1;
+
+  // 2) same class → compare card-by-card (low wins)
+  for (int i = 4; i >= 0; --i) {
+    int av = a->card[i].face_val;
+    int bv = b->card[i].face_val;
+    if (av != bv)
+      return (av < bv) ? -1 : 1;
+  }
+
+  return 0; // tie
+}
+
+static uint8_t POKEVAL_compare_hands_5_lowball(POKEVAL_NeedComparing *need_comparing,
+                                               uint8_t count) {
+  for (uint8_t i = 0; i < count; ++i) {
+    sort_hand_lowball(&need_comparing[i].hand_5);
+    need_comparing[i].won = false;
+  }
+
+  uint8_t winner_indices[count];
+  uint8_t num_winners = 0;
+
+  POKEVAL_Hand_5 best_hand = need_comparing[0].hand_5;
+  winner_indices[0] = 0;
+  num_winners = 1;
+
+  for (uint8_t i = 1; i < count; ++i) {
+    int cmp = compare_lowball_5(&best_hand, &need_comparing[i].hand_5);
+
+    if (cmp == 0) {
+      winner_indices[num_winners++] = i;
+    } else if (cmp > 0) {
+      best_hand = need_comparing[i].hand_5;
+      winner_indices[0] = i;
+      num_winners = 1;
+    }
+  }
+
+  for (uint8_t i = 0; i < num_winners; ++i) {
+    need_comparing[winner_indices[i]].won = true;
+  }
+
+  return num_winners;
+}
+
+uint8_t POKEVAL_compare_hands(POKEVAL_NeedComparing *need_comparing, uint8_t count,
+                              const bool lowball) {
   for (size_t i = 0; i < count; ++i) {
     need_comparing[i].hand_5 = POKEVAL_hand5_from_hand7(&need_comparing[i].hand);
   }
-  return POKEVAL_compare_hands_5(need_comparing, count);
+  return lowball == false ? POKEVAL_compare_hands_5(need_comparing, count)
+                          : POKEVAL_compare_hands_5_lowball(need_comparing, count);
 }

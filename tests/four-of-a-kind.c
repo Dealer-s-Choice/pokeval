@@ -40,7 +40,7 @@ POKEVAL_NeedComparing need_comparing[3] = {
     {.id = 2, .hand = ranked[2]},
 };
 
-int n_wins = POKEVAL_compare_hands(need_comparing, 3);
+int n_wins = POKEVAL_compare_hands(need_comparing, 3, false);
 fprintf(stderr, "winners: %d\n", n_wins);
 assert(n_wins == 1);
 assert(!need_comparing[0].won);

@@ -29,7 +29,7 @@ POKEVAL_NeedComparing need_comparing1[3] = {
     {.id = 2, .hand = hands1[2]},
 };
 
-uint8_t n_wins = POKEVAL_compare_hands(need_comparing1, 3);
+uint8_t n_wins = POKEVAL_compare_hands(need_comparing1, 3, false);
 fprintf(stderr, "winners: %d\n", n_wins);
 assert(n_wins == 1);
 assert(need_comparing1[0].won == false);
@@ -70,7 +70,7 @@ POKEVAL_NeedComparing need_comparing2[3] = {
     {.id = 2, .hand = hands2[2]},
 };
 
-n_wins = POKEVAL_compare_hands(need_comparing2, 3);
+n_wins = POKEVAL_compare_hands(need_comparing2, 3, false);
 fprintf(stderr, "winners: %d\n", n_wins);
 assert(n_wins == 2);
 assert(need_comparing2[0].won == false);
