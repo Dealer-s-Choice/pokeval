@@ -301,7 +301,7 @@ static int get_kicker_value(const POKEVAL_Hand_5 *hand, int quad_val) {
   return -1; // Should never happen in valid hand
 }
 
-static uint8_t POKEVAL_compare_hands_5(POKEVAL_NeedComparing *need_comparing, uint8_t count) {
+static uint8_t compare_hands_5(POKEVAL_NeedComparing *need_comparing, uint8_t count) {
   for (size_t i = 0; i < count; ++i) {
     sort_hand(&need_comparing[i].hand_5);
   }
@@ -548,8 +548,7 @@ static int compare_lowball_5(const POKEVAL_Hand_5 *a, const POKEVAL_Hand_5 *b) {
   return 0; // tie
 }
 
-static uint8_t POKEVAL_compare_hands_5_lowball(POKEVAL_NeedComparing *need_comparing,
-                                               uint8_t count) {
+static uint8_t compare_hands_5_lowball(POKEVAL_NeedComparing *need_comparing, uint8_t count) {
   for (uint8_t i = 0; i < count; ++i) {
     sort_hand_lowball(&need_comparing[i].hand_5);
     need_comparing[i].won = false;
@@ -586,6 +585,6 @@ uint8_t POKEVAL_compare_hands(POKEVAL_NeedComparing *need_comparing, uint8_t cou
   for (size_t i = 0; i < count; ++i) {
     need_comparing[i].hand_5 = POKEVAL_hand5_from_hand7(&need_comparing[i].hand);
   }
-  return lowball == false ? POKEVAL_compare_hands_5(need_comparing, count)
-                          : POKEVAL_compare_hands_5_lowball(need_comparing, count);
+  return lowball == false ? compare_hands_5(need_comparing, count)
+                          : compare_hands_5_lowball(need_comparing, count);
 }
