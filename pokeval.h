@@ -74,7 +74,9 @@ typedef struct {
   POKEVAL_Hand_5 hand_5;
 } POKEVAL_NeedComparing;
 
-void sort_hand(POKEVAL_Hand_5 *hand);
+void POKEVAL_sort_hand(POKEVAL_Hand_5 *hand);
+
+void POKEVAL_sort_hand_lowball(POKEVAL_Hand_5 *hand);
 
 short POKEVAL_evaluate_hand(POKEVAL_Hand_5 hand);
 

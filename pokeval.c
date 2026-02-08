@@ -53,7 +53,7 @@ static int count_face(const POKEVAL_Hand_5 *hand, int face_val) {
   return count;
 }
 
-void sort_hand(POKEVAL_Hand_5 *hand) {
+void POKEVAL_sort_hand(POKEVAL_Hand_5 *hand) {
   for (int i = 0; i < POKEVAL_HAND_SIZE - 1; ++i) {
     for (int j = i + 1; j < POKEVAL_HAND_SIZE; ++j) {
       int val_i = (hand->card[i].face_val == DH_CARD_ACE) ? POKEVAL_ACE : hand->card[i].face_val;
@@ -96,7 +96,7 @@ static bool is_straight(POKEVAL_Hand_5 *hand) {
 }
 
 short POKEVAL_evaluate_hand(POKEVAL_Hand_5 hand) {
-  sort_hand(&hand);
+  POKEVAL_sort_hand(&hand);
 
   bool flush = true;
   for (int i = 1; i < POKEVAL_HAND_SIZE; ++i)
@@ -303,7 +303,7 @@ static int get_kicker_value(const POKEVAL_Hand_5 *hand, int quad_val) {
 
 static uint8_t compare_hands_5(POKEVAL_NeedComparing *need_comparing, uint8_t count) {
   for (size_t i = 0; i < count; ++i) {
-    sort_hand(&need_comparing[i].hand_5);
+    POKEVAL_sort_hand(&need_comparing[i].hand_5);
   }
 
   uint8_t num_winners = 0;
@@ -496,7 +496,7 @@ POKEVAL_Hand_5 POKEVAL_hand5_from_hand7(const POKEVAL_Hand_7 *src) {
 
 static inline int lowball_value(int face) { return (face == DH_CARD_ACE) ? 1 : face; }
 
-static void sort_hand_lowball(POKEVAL_Hand_5 *hand) {
+void POKEVAL_sort_hand_lowball(POKEVAL_Hand_5 *hand) {
   for (int i = 0; i < POKEVAL_HAND_SIZE - 1; ++i) {
     for (int j = i + 1; j < POKEVAL_HAND_SIZE; ++j) {
 
@@ -550,7 +550,7 @@ static int compare_lowball_5(const POKEVAL_Hand_5 *a, const POKEVAL_Hand_5 *b) {
 
 static uint8_t compare_hands_5_lowball(POKEVAL_NeedComparing *need_comparing, uint8_t count) {
   for (uint8_t i = 0; i < count; ++i) {
-    sort_hand_lowball(&need_comparing[i].hand_5);
+    POKEVAL_sort_hand_lowball(&need_comparing[i].hand_5);
     need_comparing[i].won = false;
   }
 
