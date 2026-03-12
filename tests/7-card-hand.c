@@ -93,8 +93,8 @@ size_t num_cases = sizeof cases / sizeof cases[0];
 
 for (size_t i = 0; i < num_cases; ++i) {
   POKEVAL_Hand_5 reduced = POKEVAL_hand5_from_hand7(&cases[i].hand);
-  for (int i = 0; i < POKEVAL_HAND_SIZE; ++i)
-    fprintf(stderr, "card: %d | ", reduced.card[i].face_val);
+  for (int j = 0; j < POKEVAL_HAND_SIZE; j++)
+    fprintf(stderr, "card: %d | ", reduced.card[j].face_val);
   fputc('\n', stderr);
 
   short actual_rank = POKEVAL_evaluate_hand(reduced);
