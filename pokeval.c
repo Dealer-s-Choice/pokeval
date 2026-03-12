@@ -26,6 +26,7 @@
 
 */
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -309,7 +310,9 @@ static uint8_t compare_hands_5(POKEVAL_NeedComparing *need_comparing, uint8_t co
   uint8_t num_winners = 0;
   short best_rank = -1;
   POKEVAL_Hand_5 best_hand = {0};
+  assert(count > 0);
   uint8_t winner_indices[count];
+  winner_indices[0] = 0;
 
   // Evaluate all hands and determine the best one(s)
   for (uint8_t i = 0; i < count; ++i) {
@@ -554,7 +557,9 @@ static uint8_t compare_hands_5_lowball(POKEVAL_NeedComparing *need_comparing, ui
     need_comparing[i].won = false;
   }
 
+  assert(count > 0);
   uint8_t winner_indices[count];
+  winner_indices[0] = 0;
   uint8_t num_winners = 0;
 
   POKEVAL_Hand_5 best_hand = need_comparing[0].hand_5;
@@ -582,6 +587,7 @@ static uint8_t compare_hands_5_lowball(POKEVAL_NeedComparing *need_comparing, ui
 
 uint8_t POKEVAL_compare_hands(POKEVAL_NeedComparing *need_comparing, uint8_t count,
                               const bool lowball) {
+
   for (size_t i = 0; i < count; ++i) {
     need_comparing[i].hand_5 = POKEVAL_hand5_from_hand7(&need_comparing[i].hand);
   }
