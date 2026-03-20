@@ -462,20 +462,62 @@ static uint8_t compare_hands_5(POKEVAL_NeedComparing *need_comparing, uint8_t co
 }
 
 POKEVAL_Hand_5 POKEVAL_hand5_from_hand7(const POKEVAL_Hand_7 *src) {
-  // Fast path: It's a 5-card hand (cards 5 and/or 6 are DH_card_null)
-  if (DH_is_card_null(src->card[5]) || DH_is_card_null(src->card[6])) {
-    POKEVAL_Hand_5 dest;
-    for (size_t i = 0; i < 5; ++i) {
+  // Count valid (non-null) cards
+  size_t n = 0;
+  while (n < 7 && !DH_is_card_null(src->card[n]))
+    n++;
+
+  // Fast path: already a 5-card hand
+  if (n <= 5) {
+    POKEVAL_Hand_5 dest = {0};
+    for (size_t i = 0; i < n; ++i)
       dest.card[i] = src->card[i];
-    }
     return dest;
   }
 
-  // Full 7-card evaluation for stud or hold'em
   POKEVAL_Hand_5 best_hand = {0};
   short best_rank = -1;
   DH_Card temp[5];
 
+  if (n == 6) {
+    // 6-card hand: try all C(6,1)=6 candidates by omitting one card
+    for (size_t i = 0; i < 6; ++i) {
+      size_t k = 0;
+      for (size_t m = 0; m < 6; ++m) {
+        if (m != i)
+          temp[k++] = src->card[m];
+      }
+
+      POKEVAL_Hand_5 candidate = {0};
+      memcpy(candidate.card, temp, sizeof(temp));
+
+      short rank = POKEVAL_evaluate_hand(candidate);
+      POKEVAL_sort_hand(&candidate);
+
+      if (rank > best_rank) {
+        best_rank = rank;
+        best_hand = candidate;
+      } else if (rank == best_rank) {
+        bool candidate_better;
+        if (rank == POKEVAL_STRAIGHT || rank == POKEVAL_STRAIGHT_FLUSH) {
+          int cand_high = candidate.card[0].face_val;
+          int best_high = best_hand.card[0].face_val;
+          if (cand_high == POKEVAL_ACE && candidate.card[1].face_val == DH_CARD_FIVE)
+            cand_high = DH_CARD_FIVE;
+          if (best_high == POKEVAL_ACE && best_hand.card[1].face_val == DH_CARD_FIVE)
+            best_high = DH_CARD_FIVE;
+          candidate_better = cand_high > best_high;
+        } else {
+          candidate_better = compare_high_cards(&candidate, &best_hand) > 0;
+        }
+        if (candidate_better)
+          best_hand = candidate;
+      }
+    }
+    return best_hand;
+  }
+
+  // Full 7-card evaluation: try all C(7,2)=21 candidates by omitting two cards
   for (size_t i = 0; i < 7; ++i) {
     for (size_t j = i + 1; j < 7; ++j) {
       // Build candidate hand by omitting cards i and j
