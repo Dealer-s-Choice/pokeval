@@ -414,10 +414,15 @@ static uint8_t compare_hands_5(POKEVAL_NeedComparing *need_comparing, uint8_t co
       case POKEVAL_THREE_OF_A_KIND: {
         int a_trip = get_triplet_value(&a);
         int b_trip = get_triplet_value(&b);
-        if (a_trip == b_trip)
-          tie = true;
-        else
+        if (a_trip != b_trip) {
           b_wins = b_trip > a_trip;
+        } else {
+          int cmp = compare_high_cards(&a, &b);
+          if (cmp == 0)
+            tie = true;
+          else if (cmp < 0)
+            b_wins = true;
+        }
         break;
       }
       case POKEVAL_TWO_PAIR: {
@@ -485,12 +490,27 @@ POKEVAL_Hand_5 POKEVAL_hand5_from_hand7(const POKEVAL_Hand_7 *src) {
       memcpy(candidate.card, temp, sizeof(temp));
 
       short rank = POKEVAL_evaluate_hand(candidate);
+      POKEVAL_sort_hand(&candidate);
 
       if (rank > best_rank) {
         best_rank = rank;
         best_hand = candidate;
+      } else if (rank == best_rank) {
+        bool candidate_better;
+        if (rank == POKEVAL_STRAIGHT || rank == POKEVAL_STRAIGHT_FLUSH) {
+          int cand_high = candidate.card[0].face_val;
+          int best_high = best_hand.card[0].face_val;
+          if (cand_high == POKEVAL_ACE && candidate.card[1].face_val == DH_CARD_FIVE)
+            cand_high = DH_CARD_FIVE;
+          if (best_high == POKEVAL_ACE && best_hand.card[1].face_val == DH_CARD_FIVE)
+            best_high = DH_CARD_FIVE;
+          candidate_better = cand_high > best_high;
+        } else {
+          candidate_better = compare_high_cards(&candidate, &best_hand) > 0;
+        }
+        if (candidate_better)
+          best_hand = candidate;
       }
-      // Optional: exact tie-breaking could be added here
     }
   }
 

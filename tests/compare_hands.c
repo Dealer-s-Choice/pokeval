@@ -82,4 +82,38 @@ for (size_t i = 0; i < 3; ++i) {
     fprintf(stderr, "Winner: %d\n", need_comparing2[i].id);
 }
 
+// --- Three of a kind: same trips, kicker decides ---
+// Both players have three Kings from a 7-card hand.
+// Player 0: K K K 2 A 3 J  -> best 5: K K K A J  (Ace kicker)
+// Player 1: K K K 2 Q 3 J  -> best 5: K K K Q J  (Queen kicker)
+// Player 0 should win.
+
+POKEVAL_Hand_7 hands3[2] = {
+    {{{DH_CARD_KING, DH_SUIT_SPADES},
+      {DH_CARD_KING, DH_SUIT_HEARTS},
+      {DH_CARD_KING, DH_SUIT_DIAMONDS},
+      {DH_CARD_TWO, DH_SUIT_HEARTS},
+      {DH_CARD_ACE, DH_SUIT_CLUBS},
+      {DH_CARD_THREE, DH_SUIT_SPADES},
+      {DH_CARD_JACK, DH_SUIT_CLUBS}}},
+    {{{DH_CARD_KING, DH_SUIT_SPADES},
+      {DH_CARD_KING, DH_SUIT_HEARTS},
+      {DH_CARD_KING, DH_SUIT_DIAMONDS},
+      {DH_CARD_TWO, DH_SUIT_HEARTS},
+      {DH_CARD_QUEEN, DH_SUIT_CLUBS},
+      {DH_CARD_THREE, DH_SUIT_SPADES},
+      {DH_CARD_JACK, DH_SUIT_CLUBS}}},
+};
+
+POKEVAL_NeedComparing need_comparing3[2] = {
+    {.id = 0, .hand = hands3[0]},
+    {.id = 1, .hand = hands3[1]},
+};
+
+n_wins = POKEVAL_compare_hands(need_comparing3, 2, false);
+fprintf(stderr, "winners: %d\n", n_wins);
+assert(n_wins == 1);
+assert(need_comparing3[0].won); // Ace kicker wins
+assert(need_comparing3[1].won == false);
+
 _MAIN_TAIL_
