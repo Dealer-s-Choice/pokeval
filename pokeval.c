@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "config.h"
 #include "pokeval.h"
 
 const char *POKEVAL_rank[NUM_HAND_RANKS] = {[POKEVAL_HIGH_CARD] = "High Card",
@@ -57,8 +58,8 @@ static int count_face(const POKEVAL_Hand_5 *hand, int face_val) {
 void POKEVAL_sort_hand(POKEVAL_Hand_5 *hand) {
   for (int i = 0; i < POKEVAL_HAND_SIZE - 1; ++i) {
     for (int j = i + 1; j < POKEVAL_HAND_SIZE; ++j) {
-      int val_i = (hand->card[i].face_val == DH_CARD_ACE) ? POKEVAL_ACE : hand->card[i].face_val;
-      int val_j = (hand->card[j].face_val == DH_CARD_ACE) ? POKEVAL_ACE : hand->card[j].face_val;
+      int8_t val_i = (hand->card[i].face_val == DH_CARD_ACE) ? POKEVAL_ACE : hand->card[i].face_val;
+      int8_t val_j = (hand->card[j].face_val == DH_CARD_ACE) ? POKEVAL_ACE : hand->card[j].face_val;
       hand->card[i].face_val = val_i;
       hand->card[j].face_val = val_j;
 
@@ -311,7 +312,7 @@ static uint8_t compare_hands_5(POKEVAL_NeedComparing *need_comparing, uint8_t co
   short best_rank = -1;
   POKEVAL_Hand_5 best_hand = {0};
   assert(count > 0);
-  uint8_t winner_indices[count];
+  uint8_t winner_indices[UINT8_MAX];
   winner_indices[0] = 0;
 
   // Evaluate all hands and determine the best one(s)
@@ -620,7 +621,7 @@ static uint8_t compare_hands_5_lowball(POKEVAL_NeedComparing *need_comparing, ui
   }
 
   assert(count > 0);
-  uint8_t winner_indices[count];
+  uint8_t winner_indices[UINT8_MAX];
   winner_indices[0] = 0;
   uint8_t num_winners = 0;
 
