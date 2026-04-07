@@ -41,6 +41,8 @@ extern "C" {
 #if defined(_WIN32) || defined(__CYGWIN__)
 #  ifdef POKEVAL_BUILD
 #    define POKEVAL_API __declspec(dllexport)
+#  elif defined(POKEVAL_STATIC)
+#    define POKEVAL_API
 #  else
 #    define POKEVAL_API __declspec(dllimport)
 #  endif

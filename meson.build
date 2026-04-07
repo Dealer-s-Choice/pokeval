@@ -44,8 +44,11 @@ buildtarget = library(
 
 # How to use in a superproject and other info
 # https://mesonbuild.com/Subprojects.html
+_compile_args = get_option('default_library') == 'static' ? ['-DPOKEVAL_STATIC'] : []
+
 pokeval_dep = declare_dependency(
   link_with: buildtarget,
+  compile_args: _compile_args,
   dependencies: deckhandler_dep,
   include_directories: '.',
 )
