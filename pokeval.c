@@ -58,8 +58,8 @@ static int count_face(const POKEVAL_Hand_5 *hand, int face_val) {
 void POKEVAL_sort_hand(POKEVAL_Hand_5 *hand) {
   for (int i = 0; i < POKEVAL_HAND_SIZE - 1; ++i) {
     for (int j = i + 1; j < POKEVAL_HAND_SIZE; ++j) {
-      int8_t val_i = (hand->card[i].face_val == DH_CARD_ACE) ? POKEVAL_ACE : hand->card[i].face_val;
-      int8_t val_j = (hand->card[j].face_val == DH_CARD_ACE) ? POKEVAL_ACE : hand->card[j].face_val;
+      int32_t val_i = (hand->card[i].face_val == DH_CARD_ACE) ? POKEVAL_ACE : hand->card[i].face_val;
+      int32_t val_j = (hand->card[j].face_val == DH_CARD_ACE) ? POKEVAL_ACE : hand->card[j].face_val;
       hand->card[i].face_val = val_i;
       hand->card[j].face_val = val_j;
 
