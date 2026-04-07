@@ -107,7 +107,9 @@ short POKEVAL_evaluate_hand(POKEVAL_Hand_5 hand) {
 
   bool straight = is_straight(&hand);
 
-  if (straight && flush && hand.card[0].face_val == POKEVAL_ACE)
+  // Royal flush is specifically A-K-Q-J-10 (not the A-2-3-4-5 wheel).
+  if (straight && flush && hand.card[0].face_val == POKEVAL_ACE &&
+      hand.card[1].face_val == DH_CARD_KING)
     return POKEVAL_ROYAL_FLUSH;
   if (straight && flush)
     return POKEVAL_STRAIGHT_FLUSH;
@@ -656,4 +658,149 @@ uint8_t POKEVAL_compare_hands(POKEVAL_NeedComparing *need_comparing, uint8_t cou
   }
   return lowball == false ? compare_hands_5(need_comparing, count)
                           : compare_hands_5_lowball(need_comparing, count);
+}
+
+// Wild card evaluation -------------------------------------------------------
+
+static const int32_t wild_face_values[13] = {
+  DH_CARD_ACE,   DH_CARD_TWO,  DH_CARD_THREE, DH_CARD_FOUR, DH_CARD_FIVE,
+  DH_CARD_SIX,   DH_CARD_SEVEN, DH_CARD_EIGHT, DH_CARD_NINE, DH_CARD_TEN,
+  DH_CARD_JACK,  DH_CARD_QUEEN, DH_CARD_KING,
+};
+#define WILD_FACE_COUNT 13
+
+// Recursively try all face value assignments for wilds; returns the best rank.
+// Each wild is assigned `suit` as its suit (caller passes flush or non-flush suit).
+static short try_wild_combos(DH_Card *real_cards, int n_real, int n_wild, int wild_idx,
+                              DH_Card *current_wilds, int32_t suit) {
+  if (wild_idx == n_wild) {
+    POKEVAL_Hand_5 hand = {0};
+    for (int i = 0; i < n_real; i++)
+      hand.card[i] = real_cards[i];
+    for (int i = 0; i < n_wild; i++)
+      hand.card[n_real + i] = current_wilds[i];
+    return POKEVAL_evaluate_hand(hand);
+  }
+
+  short best = POKEVAL_HIGH_CARD;
+  for (int fi = 0; fi < WILD_FACE_COUNT; fi++) {
+    current_wilds[wild_idx].face_val = wild_face_values[fi];
+    current_wilds[wild_idx].suit = suit;
+    short rank = try_wild_combos(real_cards, n_real, n_wild, wild_idx + 1, current_wilds, suit);
+    if (rank > best) {
+      best = rank;
+      if (best == POKEVAL_FIVE_OF_A_KIND)
+        return best;
+    }
+  }
+  return best;
+}
+
+short POKEVAL_evaluate_hand_wild(POKEVAL_Hand_5 hand, int32_t wild_face) {
+  DH_Card real_cards[POKEVAL_HAND_SIZE];
+  int n_real = 0, n_wild = 0;
+
+  for (int i = 0; i < POKEVAL_HAND_SIZE; i++) {
+    if (hand.card[i].face_val == wild_face)
+      n_wild++;
+    else
+      real_cards[n_real++] = hand.card[i];
+  }
+
+  if (n_wild == 0)
+    return POKEVAL_evaluate_hand(hand);
+
+  if (n_real == 0)
+    return POKEVAL_FIVE_OF_A_KIND; // all wilds → five aces
+
+  // Determine the dominant suit among real cards for flush checking.
+  int suit_count[4] = {0};
+  for (int i = 0; i < n_real; i++) {
+    int s = real_cards[i].suit;
+    if (s >= 0 && s < 4)
+      suit_count[s]++;
+  }
+  int dom_suit = 0;
+  for (int s = 1; s < 4; s++)
+    if (suit_count[s] > suit_count[dom_suit])
+      dom_suit = s;
+
+  bool all_same_suit = (suit_count[dom_suit] == n_real);
+  // Non-flush: assign wilds a different suit so flush detection stays false.
+  int32_t non_flush_suit = (int32_t)((dom_suit + 1) % 4);
+
+  DH_Card wilds[4] = {0};
+
+  short best = try_wild_combos(real_cards, n_real, n_wild, 0, wilds, non_flush_suit);
+
+  // Flush check: only possible when all real cards share a suit.
+  if (all_same_suit && best < POKEVAL_FIVE_OF_A_KIND) {
+    short flush_best = try_wild_combos(real_cards, n_real, n_wild, 0, wilds, (int32_t)dom_suit);
+    if (flush_best > best)
+      best = flush_best;
+  }
+
+  return best;
+}
+
+static void update_best_wild(POKEVAL_Hand_5 *best_hand, short *best_rank,
+                              POKEVAL_Hand_5 candidate, int32_t wild_face) {
+  short rank = POKEVAL_evaluate_hand_wild(candidate, wild_face);
+  if (rank > *best_rank) {
+    *best_rank = rank;
+    *best_hand = candidate;
+  } else if (rank == *best_rank) {
+    POKEVAL_Hand_5 sorted_cand = candidate;
+    POKEVAL_Hand_5 sorted_best = *best_hand;
+    POKEVAL_sort_hand(&sorted_cand);
+    POKEVAL_sort_hand(&sorted_best);
+    if (compare_high_cards(&sorted_cand, &sorted_best) > 0)
+      *best_hand = candidate;
+  }
+}
+
+POKEVAL_Hand_5 POKEVAL_hand5_from_hand7_wild(const POKEVAL_Hand_7 *src, int32_t wild_face) {
+  size_t n = 0;
+  while (n < 7 && !DH_is_card_null(src->card[n]))
+    n++;
+
+  if (n <= 5) {
+    POKEVAL_Hand_5 dest = {0};
+    for (size_t i = 0; i < n; i++)
+      dest.card[i] = src->card[i];
+    return dest;
+  }
+
+  POKEVAL_Hand_5 best_hand = {0};
+  short best_rank = -1;
+  DH_Card temp[5];
+
+  if (n == 6) {
+    // C(6,5) = 6: omit one card at a time
+    for (size_t i = 0; i < 6; i++) {
+      size_t k = 0;
+      for (size_t m = 0; m < 6; m++)
+        if (m != i)
+          temp[k++] = src->card[m];
+      POKEVAL_Hand_5 candidate = {0};
+      memcpy(candidate.card, temp, sizeof(temp));
+      update_best_wild(&best_hand, &best_rank, candidate, wild_face);
+    }
+    return best_hand;
+  }
+
+  // C(7,5) = 21: omit two cards at a time
+  for (size_t i = 0; i < 7; i++) {
+    for (size_t j = i + 1; j < 7; j++) {
+      size_t k = 0;
+      for (size_t m = 0; m < 7; m++)
+        if (m != i && m != j)
+          temp[k++] = src->card[m];
+      POKEVAL_Hand_5 candidate = {0};
+      memcpy(candidate.card, temp, sizeof(temp));
+      update_best_wild(&best_hand, &best_rank, candidate, wild_face);
+    }
+  }
+
+  return best_hand;
 }

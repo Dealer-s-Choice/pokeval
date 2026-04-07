@@ -39,4 +39,15 @@ assert(!need_comparing[0].won);
 assert(need_comparing[1].won);
 assert(!need_comparing[2].won);
 
+/* Wheel flush (A-2-3-4-5 same suit) is a straight flush, not a royal flush */
+{
+  static POKEVAL_Hand_5 wheel_flush;
+  int wf_faces[] = {DH_CARD_ACE, DH_CARD_TWO, DH_CARD_THREE, DH_CARD_FOUR, DH_CARD_FIVE};
+  int wf_suits[] = {DH_SUIT_HEARTS, DH_SUIT_HEARTS, DH_SUIT_HEARTS, DH_SUIT_HEARTS, DH_SUIT_HEARTS};
+  set_hand(&wheel_flush, wf_faces, wf_suits);
+  short wf_rank = POKEVAL_evaluate_hand(wheel_flush);
+  fprintf(stderr, "wheel flush: %s\n", POKEVAL_rank[wf_rank]);
+  assert(wf_rank == POKEVAL_STRAIGHT_FLUSH);
+}
+
 _MAIN_TAIL_

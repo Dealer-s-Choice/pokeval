@@ -99,6 +99,11 @@ POKEVAL_API uint8_t POKEVAL_compare_hands(POKEVAL_NeedComparing *hands, const ui
 
 POKEVAL_API POKEVAL_Hand_5 POKEVAL_hand5_from_hand7(const POKEVAL_Hand_7 *src);
 
+// Wild card variants: `wild_face` is the face value treated as wild (e.g. DH_CARD_TWO).
+POKEVAL_API short POKEVAL_evaluate_hand_wild(POKEVAL_Hand_5 hand, int32_t wild_face);
+POKEVAL_API POKEVAL_Hand_5 POKEVAL_hand5_from_hand7_wild(const POKEVAL_Hand_7 *src,
+                                                         int32_t wild_face);
+
 #ifdef __cplusplus
 }
 #endif

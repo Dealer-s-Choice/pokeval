@@ -8,7 +8,8 @@ cases = [
   '6-card-hand',
   '7-card-hand',
   'four-of-a-kind',
-  'five-of-a-kind'
+  'five-of-a-kind',
+  'wild',
 ]
 
 foreach test : cases
