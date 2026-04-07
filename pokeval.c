@@ -804,3 +804,47 @@ POKEVAL_Hand_5 POKEVAL_hand5_from_hand7_wild(const POKEVAL_Hand_7 *src, int32_t 
 
   return best_hand;
 }
+
+uint8_t POKEVAL_compare_hands_wild(POKEVAL_NeedComparing *need_comparing, uint8_t count,
+                                   int32_t wild_face) {
+  for (size_t i = 0; i < count; ++i)
+    need_comparing[i].hand_5 = POKEVAL_hand5_from_hand7_wild(&need_comparing[i].hand, wild_face);
+
+  uint8_t num_winners = 0;
+  short best_rank = -1;
+  POKEVAL_Hand_5 best_hand = {0};
+  assert(count > 0);
+  uint8_t winner_indices[UINT8_MAX];
+  winner_indices[0] = 0;
+
+  for (uint8_t i = 0; i < count; ++i) {
+    need_comparing[i].won = false;
+    POKEVAL_Hand_5 current_hand = need_comparing[i].hand_5;
+    short rank = POKEVAL_evaluate_hand_wild(current_hand, wild_face);
+
+    if (rank > best_rank) {
+      best_rank = rank;
+      best_hand = current_hand;
+      winner_indices[0] = i;
+      num_winners = 1;
+    } else if (rank == best_rank) {
+      POKEVAL_Hand_5 a = best_hand;
+      POKEVAL_Hand_5 b = current_hand;
+      POKEVAL_sort_hand(&a);
+      POKEVAL_sort_hand(&b);
+      int cmp = compare_high_cards(&a, &b);
+      if (cmp == 0) {
+        winner_indices[num_winners++] = i;
+      } else if (cmp < 0) {
+        best_hand = current_hand;
+        winner_indices[0] = i;
+        num_winners = 1;
+      }
+    }
+  }
+
+  for (uint8_t i = 0; i < num_winners; ++i)
+    need_comparing[winner_indices[i]].won = true;
+
+  return num_winners;
+}
