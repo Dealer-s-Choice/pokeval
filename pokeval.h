@@ -106,6 +106,14 @@ POKEVAL_API POKEVAL_Hand_5 POKEVAL_hand5_from_hand7_wild(const POKEVAL_Hand_7 *s
 POKEVAL_API uint8_t POKEVAL_compare_hands_wild(POKEVAL_NeedComparing *hands, uint8_t count,
                                                int32_t wild_face);
 
+// Bring-in ordering for stud games.
+// Suit rank: clubs=0 (lowest, forced to bring in) < diamonds=1 < hearts=2 < spades=3 (highest).
+POKEVAL_API int POKEVAL_suit_bringin_rank(int32_t suit);
+
+// Returns true if card a must post the bring-in before card b.
+// Lower face value (ace-high) brings in first; ties broken by suit rank (clubs loses).
+POKEVAL_API bool POKEVAL_card_bringin_lt(DH_Card a, DH_Card b);
+
 #ifdef __cplusplus
 }
 #endif

@@ -848,3 +848,23 @@ uint8_t POKEVAL_compare_hands_wild(POKEVAL_NeedComparing *need_comparing, uint8_
 
   return num_winners;
 }
+
+// Bring-in helpers -----------------------------------------------------------
+
+int POKEVAL_suit_bringin_rank(int32_t suit) {
+  switch (suit) {
+  case DH_SUIT_CLUBS:    return 0;
+  case DH_SUIT_DIAMONDS: return 1;
+  case DH_SUIT_HEARTS:   return 2;
+  case DH_SUIT_SPADES:   return 3;
+  default:               return -1;
+  }
+}
+
+bool POKEVAL_card_bringin_lt(DH_Card a, DH_Card b) {
+  int ra = face_rank(a.face_val);
+  int rb = face_rank(b.face_val);
+  if (ra != rb)
+    return ra < rb;
+  return POKEVAL_suit_bringin_rank(a.suit) < POKEVAL_suit_bringin_rank(b.suit);
+}
