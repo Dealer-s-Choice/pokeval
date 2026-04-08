@@ -114,6 +114,11 @@ POKEVAL_API int POKEVAL_suit_bringin_rank(int32_t suit);
 // Lower face value (ace-high) brings in first; ties broken by suit rank (clubs loses).
 POKEVAL_API bool POKEVAL_card_bringin_lt(DH_Card a, DH_Card b);
 
+// Score up to 4 visible (face-up) stud cards for street-opening order.
+// Higher score = better visible hand = acts first on subsequent streets.
+// n must be in [0, 4]. Returns 0 for empty input.
+POKEVAL_API uint64_t POKEVAL_score_stud_upcards(const DH_Card *cards, int n);
+
 #ifdef __cplusplus
 }
 #endif

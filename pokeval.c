@@ -868,3 +868,77 @@ bool POKEVAL_card_bringin_lt(DH_Card a, DH_Card b) {
     return ra < rb;
   return POKEVAL_suit_bringin_rank(a.suit) < POKEVAL_suit_bringin_rank(b.suit);
 }
+
+uint64_t POKEVAL_score_stud_upcards(const DH_Card *cards, int n) {
+  if (n <= 0)
+    return 0;
+
+  // Collect face values (ace-high) and track suit of the highest card for tiebreaking.
+  int faces[4] = {0};
+  int best_suit = 0, best_face_val = 0;
+  for (int i = 0; i < n && i < 4; i++) {
+    int fv = face_rank(cards[i].face_val);
+    faces[i] = fv;
+    if (fv > best_face_val) {
+      best_face_val = fv;
+      best_suit = POKEVAL_suit_bringin_rank(cards[i].suit);
+    }
+  }
+
+  // Insertion sort descending
+  for (int i = 1; i < n; i++) {
+    int key = faces[i];
+    int j = i - 1;
+    while (j >= 0 && faces[j] < key) {
+      faces[j + 1] = faces[j];
+      j--;
+    }
+    faces[j + 1] = key;
+  }
+
+  // Count occurrences (valid face values 2-14)
+  int cnt[15] = {0};
+  for (int i = 0; i < n; i++)
+    if (faces[i] >= 2 && faces[i] <= 14)
+      cnt[faces[i]]++;
+
+  // Find best and second-best group face (highest count first, then highest face)
+  int best_n = 1, best_f = 0;
+  int second_n = 0, second_f = 0;
+  for (int f = 14; f >= 2; f--) {
+    if (cnt[f] < 2)
+      continue;
+    if (cnt[f] > best_n || (cnt[f] == best_n && f > best_f)) {
+      second_n = best_n;
+      second_f = best_f;
+      best_n = cnt[f];
+      best_f = f;
+    } else if (second_f == 0 && cnt[f] >= 2) {
+      second_n = cnt[f];
+      second_f = f;
+    }
+  }
+  (void)second_n;
+
+  // hand_rank: quads=7, trips=6, two-pair=5, pair=4, high-card=3
+  int hand_rank;
+  if (best_n == 4)
+    hand_rank = 7;
+  else if (best_n == 3)
+    hand_rank = 6;
+  else if (best_n == 2 && second_f > 0)
+    hand_rank = 5;
+  else if (best_n == 2)
+    hand_rank = 4;
+  else
+    hand_rank = 3;
+
+  uint64_t score = (uint64_t)hand_rank << 48;
+  score |= (uint64_t)best_f << 40;
+  score |= (uint64_t)second_f << 32;
+  for (int i = 0; i < 4 && i < n; i++)
+    score |= (uint64_t)faces[i] << (24 - i * 8);
+  score |= (uint64_t)best_suit;
+
+  return score;
+}
