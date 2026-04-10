@@ -2,7 +2,7 @@
 
 _MAIN_HEAD_
 
-POKEVAL_Hand_7 ranked[] = {
+POKEVAL_Hand_9 ranked[] = {
     // Player 0: Four Kings with 9 kicker
     {{{DH_CARD_KING, DH_SUIT_HEARTS},
       {DH_CARD_KING, DH_SUIT_SPADES},

@@ -2,7 +2,7 @@
 
 _MAIN_HEAD_
 
-POKEVAL_Hand_7 hands1[3] = {
+POKEVAL_Hand_9 hands1[3] = {
     // Hand 0: Full House (Aces over Kings)
     {{{DH_CARD_ACE, DH_SUIT_HEARTS},
       {DH_CARD_ACE, DH_SUIT_SPADES},
@@ -43,7 +43,7 @@ for (size_t i = 0; i < 3; ++i) {
 
 // --- Second test with tie between two straights ---
 
-POKEVAL_Hand_7 hands2[3] = {
+POKEVAL_Hand_9 hands2[3] = {
     // Hand 0: Four of a Kind (Queens)
     {{{DH_CARD_QUEEN, DH_SUIT_HEARTS},
       {DH_CARD_QUEEN, DH_SUIT_SPADES},
@@ -88,7 +88,7 @@ for (size_t i = 0; i < 3; ++i) {
 // Player 1: K K K 2 Q 3 J  -> best 5: K K K Q J  (Queen kicker)
 // Player 0 should win.
 
-POKEVAL_Hand_7 hands3[2] = {
+POKEVAL_Hand_9 hands3[2] = {
     {{{DH_CARD_KING, DH_SUIT_SPADES},
       {DH_CARD_KING, DH_SUIT_HEARTS},
       {DH_CARD_KING, DH_SUIT_DIAMONDS},

@@ -3,7 +3,7 @@
 #define NULL_CARD {DH_CARD_NULL, DH_CARD_NULL}
 
 typedef struct {
-  POKEVAL_Hand_7 hand; // card[6] is null for 6-card hands
+  POKEVAL_Hand_9 hand; // card[6] is null for 6-card hands
   short expected_rank;
   const int *expected_cards; // NULL = don't check; sorted descending face values
   const char *description;

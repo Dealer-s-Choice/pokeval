@@ -1,7 +1,7 @@
 #include "00_test.h"
 
 typedef struct {
-  POKEVAL_Hand_7 hand;
+  POKEVAL_Hand_9 hand;
   short expected_rank;
   const int *expected_cards; // NULL = don't check; otherwise sorted descending face values
   const char *description;

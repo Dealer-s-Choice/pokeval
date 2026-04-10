@@ -464,10 +464,10 @@ static uint8_t compare_hands_5(POKEVAL_NeedComparing *need_comparing, uint8_t co
   return num_winners;
 }
 
-POKEVAL_Hand_5 POKEVAL_hand5_from_hand7(const POKEVAL_Hand_7 *src) {
+POKEVAL_Hand_5 POKEVAL_hand5_from_hand7(const POKEVAL_Hand_9 *src) {
   // Count valid (non-null) cards
   size_t n = 0;
-  while (n < 7 && !DH_is_card_null(src->card[n]))
+  while (n < 9 && !DH_is_card_null(src->card[n]))
     n++;
 
   // Fast path: already a 5-card hand
@@ -759,9 +759,9 @@ static void update_best_wild(POKEVAL_Hand_5 *best_hand, short *best_rank,
   }
 }
 
-POKEVAL_Hand_5 POKEVAL_hand5_from_hand7_wild(const POKEVAL_Hand_7 *src, int32_t wild_face) {
+POKEVAL_Hand_5 POKEVAL_hand5_from_hand7_wild(const POKEVAL_Hand_9 *src, int32_t wild_face) {
   size_t n = 0;
-  while (n < 7 && !DH_is_card_null(src->card[n]))
+  while (n < 9 && !DH_is_card_null(src->card[n]))
     n++;
 
   if (n <= 5) {
@@ -803,6 +803,67 @@ POKEVAL_Hand_5 POKEVAL_hand5_from_hand7_wild(const POKEVAL_Hand_7 *src, int32_t 
   }
 
   return best_hand;
+}
+
+// Helper: update best 5-card hand with proper tie-breaking for all ranks.
+static void update_best_5card(POKEVAL_Hand_5 *best_hand, short *best_rank,
+                              POKEVAL_Hand_5 candidate, short rank) {
+  if (rank > *best_rank) {
+    *best_rank = rank;
+    *best_hand = candidate;
+  } else if (rank == *best_rank) {
+    bool candidate_better;
+    if (rank == POKEVAL_STRAIGHT || rank == POKEVAL_STRAIGHT_FLUSH) {
+      int cand_high = candidate.card[0].face_val;
+      int best_high = best_hand->card[0].face_val;
+      if (cand_high == POKEVAL_ACE && candidate.card[1].face_val == DH_CARD_FIVE)
+        cand_high = DH_CARD_FIVE;
+      if (best_high == POKEVAL_ACE && best_hand->card[1].face_val == DH_CARD_FIVE)
+        best_high = DH_CARD_FIVE;
+      candidate_better = cand_high > best_high;
+    } else {
+      candidate_better = compare_high_cards(&candidate, best_hand) > 0;
+    }
+    if (candidate_better)
+      *best_hand = candidate;
+  }
+}
+
+POKEVAL_Hand_5 POKEVAL_hand5_omaha(const POKEVAL_Hand_9 *src) {
+  // Hole cards: positions 0-3; community cards: positions 4-8.
+  // Must use exactly 2 hole cards and 3 community cards (C(4,2) x C(5,3) = 60 combos).
+  const DH_Card *hole = src->card;
+  const DH_Card *comm = src->card + 4;
+
+  POKEVAL_Hand_5 best_hand = {0};
+  short best_rank = -1;
+
+  for (int h1 = 0; h1 < 4; h1++) {
+    for (int h2 = h1 + 1; h2 < 4; h2++) {
+      for (int c1 = 0; c1 < 5; c1++) {
+        for (int c2 = c1 + 1; c2 < 5; c2++) {
+          for (int c3 = c2 + 1; c3 < 5; c3++) {
+            POKEVAL_Hand_5 candidate = {0};
+            candidate.card[0] = hole[h1];
+            candidate.card[1] = hole[h2];
+            candidate.card[2] = comm[c1];
+            candidate.card[3] = comm[c2];
+            candidate.card[4] = comm[c3];
+            short rank = POKEVAL_evaluate_hand(candidate);
+            POKEVAL_sort_hand(&candidate);
+            update_best_5card(&best_hand, &best_rank, candidate, rank);
+          }
+        }
+      }
+    }
+  }
+  return best_hand;
+}
+
+uint8_t POKEVAL_compare_hands_omaha(POKEVAL_NeedComparing *need_comparing, uint8_t count) {
+  for (size_t i = 0; i < count; ++i)
+    need_comparing[i].hand_5 = POKEVAL_hand5_omaha(&need_comparing[i].hand);
+  return compare_hands_5(need_comparing, count);
 }
 
 uint8_t POKEVAL_compare_hands_wild(POKEVAL_NeedComparing *need_comparing, uint8_t count,

@@ -2,7 +2,7 @@
 
 _MAIN_HEAD_
 
-POKEVAL_Hand_7 ranked[] = {
+POKEVAL_Hand_9 ranked[] = {
     {{{DH_CARD_QUEEN, DH_SUIT_HEARTS},
       {DH_CARD_TEN, DH_SUIT_SPADES},
       {DH_CARD_ACE, DH_SUIT_CLUBS},
@@ -40,7 +40,7 @@ assert(n_wins == 1);
 fprintf(stderr, "winners: %d\n", n_wins);
 assert(need_comparing[1].won);
 
-POKEVAL_Hand_7 ranked2[] = {
+POKEVAL_Hand_9 ranked2[] = {
     {{{DH_CARD_QUEEN, DH_SUIT_HEARTS},
       {DH_CARD_TEN, DH_SUIT_SPADES},
       {DH_CARD_ACE, DH_SUIT_CLUBS},

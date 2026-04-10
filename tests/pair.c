@@ -2,7 +2,7 @@
 
 _MAIN_HEAD_
 
-POKEVAL_Hand_7 hands[] = {
+POKEVAL_Hand_9 hands[] = {
     // Kings vs Queens
     {{{DH_CARD_QUEEN, DH_SUIT_HEARTS},
       {DH_CARD_TEN, DH_SUIT_SPADES},

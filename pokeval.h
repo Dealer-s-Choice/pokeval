@@ -76,13 +76,13 @@ typedef struct {
 } POKEVAL_Hand_5;
 
 typedef struct {
-  DH_Card card[7];
-} POKEVAL_Hand_7;
+  DH_Card card[9];
+} POKEVAL_Hand_9;
 
 typedef struct {
   bool won;
   int8_t id;
-  POKEVAL_Hand_7 hand;
+  POKEVAL_Hand_9 hand;
   POKEVAL_Hand_5 hand_5;
 } POKEVAL_NeedComparing;
 
@@ -97,11 +97,17 @@ POKEVAL_API short POKEVAL_evaluate_hand(POKEVAL_Hand_5 hand);
 POKEVAL_API uint8_t POKEVAL_compare_hands(POKEVAL_NeedComparing *hands, const uint8_t count,
                                           const bool lowball);
 
-POKEVAL_API POKEVAL_Hand_5 POKEVAL_hand5_from_hand7(const POKEVAL_Hand_7 *src);
+POKEVAL_API POKEVAL_Hand_5 POKEVAL_hand5_from_hand7(const POKEVAL_Hand_9 *src);
+
+// Omaha evaluation: cards 0-3 are hole cards, cards 4-8 are community cards.
+// Tries all C(4,2) x C(5,3) = 60 combinations and returns the best hand using
+// exactly 2 hole cards and 3 community cards.
+POKEVAL_API POKEVAL_Hand_5 POKEVAL_hand5_omaha(const POKEVAL_Hand_9 *src);
+POKEVAL_API uint8_t POKEVAL_compare_hands_omaha(POKEVAL_NeedComparing *hands, uint8_t count);
 
 // Wild card variants: `wild_face` is the face value treated as wild (e.g. DH_CARD_TWO).
 POKEVAL_API short POKEVAL_evaluate_hand_wild(POKEVAL_Hand_5 hand, int32_t wild_face);
-POKEVAL_API POKEVAL_Hand_5 POKEVAL_hand5_from_hand7_wild(const POKEVAL_Hand_7 *src,
+POKEVAL_API POKEVAL_Hand_5 POKEVAL_hand5_from_hand7_wild(const POKEVAL_Hand_9 *src,
                                                          int32_t wild_face);
 POKEVAL_API uint8_t POKEVAL_compare_hands_wild(POKEVAL_NeedComparing *hands, uint8_t count,
                                                int32_t wild_face);

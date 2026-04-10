@@ -3,6 +3,7 @@ cases = [
   'bringin',
   'compare_hands',
   'nothing',
+  'omaha',
   'pair',
   'straight',
   'sort_hand',

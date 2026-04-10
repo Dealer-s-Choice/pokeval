@@ -2,7 +2,7 @@
 
 _MAIN_HEAD_
 
-POKEVAL_Hand_7 ranked[] = {
+POKEVAL_Hand_9 ranked[] = {
     // Player 0: Five Queens
     {{{DH_CARD_QUEEN, DH_SUIT_HEARTS},
       {DH_CARD_QUEEN, DH_SUIT_SPADES},

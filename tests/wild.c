@@ -117,7 +117,7 @@ _MAIN_HEAD_
 /* --- 7-card hand evaluator with wilds --- */
 {
   /* 3 kings + 2 wilds (among 7 cards) → best 5-card hand is five-of-a-kind of kings */
-  POKEVAL_Hand_7 h7 = {{{DH_CARD_KING, DH_SUIT_HEARTS},
+  POKEVAL_Hand_9 h7 = {{{DH_CARD_KING, DH_SUIT_HEARTS},
                          {DH_CARD_KING, DH_SUIT_CLUBS},
                          {DH_CARD_KING, DH_SUIT_DIAMONDS},
                          {DH_CARD_TWO, DH_SUIT_SPADES},
@@ -132,7 +132,7 @@ _MAIN_HEAD_
 
 {
   /* 4 suited consecutive + 1 wild in 7-card hand → should find straight flush */
-  POKEVAL_Hand_7 h7 = {{{DH_CARD_FIVE, DH_SUIT_HEARTS},
+  POKEVAL_Hand_9 h7 = {{{DH_CARD_FIVE, DH_SUIT_HEARTS},
                          {DH_CARD_SIX, DH_SUIT_HEARTS},
                          {DH_CARD_SEVEN, DH_SUIT_HEARTS},
                          {DH_CARD_EIGHT, DH_SUIT_HEARTS},
