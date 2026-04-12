@@ -145,4 +145,101 @@ _MAIN_HEAD_
   assert(rank == POKEVAL_STRAIGHT_FLUSH);
 }
 
+/* --- 6-card wild hands --- */
+
+{
+  /* Wild (2) is the 6th (last) card; no wilds in first 5.
+   * K K K A 9 2 → best 5: K K K A 2 = four kings (wild fills 4th K) + ace kicker */
+  POKEVAL_Hand_9 h6 = {{{DH_CARD_KING, DH_SUIT_SPADES},
+                         {DH_CARD_KING, DH_SUIT_HEARTS},
+                         {DH_CARD_KING, DH_SUIT_DIAMONDS},
+                         {DH_CARD_ACE, DH_SUIT_CLUBS},
+                         {DH_CARD_NINE, DH_SUIT_SPADES},
+                         {DH_CARD_TWO, DH_SUIT_HEARTS}}};
+  POKEVAL_Hand_5 best = POKEVAL_hand5_from_hand7_wild(&h6, DH_CARD_TWO);
+  short rank = POKEVAL_evaluate_hand_wild(best, DH_CARD_TWO);
+  fprintf(stderr, "6-card wild (2 last): %s\n", POKEVAL_rank[rank]);
+  assert(rank == POKEVAL_FOUR_OF_A_KIND);
+}
+
+{
+  /* Wild (2) in position 3 of first 5, another wild (2) as the 6th card.
+   * J J J 2 6 2 → two wilds + three jacks = five of a kind */
+  POKEVAL_Hand_9 h6 = {{{DH_CARD_JACK, DH_SUIT_SPADES},
+                         {DH_CARD_JACK, DH_SUIT_HEARTS},
+                         {DH_CARD_JACK, DH_SUIT_DIAMONDS},
+                         {DH_CARD_TWO, DH_SUIT_CLUBS},
+                         {DH_CARD_SIX, DH_SUIT_SPADES},
+                         {DH_CARD_TWO, DH_SUIT_HEARTS}}};
+  POKEVAL_Hand_5 best = POKEVAL_hand5_from_hand7_wild(&h6, DH_CARD_TWO);
+  short rank = POKEVAL_evaluate_hand_wild(best, DH_CARD_TWO);
+  fprintf(stderr, "6-card wild (2 in first 5 and last): %s\n", POKEVAL_rank[rank]);
+  assert(rank == POKEVAL_FIVE_OF_A_KIND);
+}
+
+{
+  /* Wild (2) in position 2 of first 5, another wild (2) as the 6th card; straight flush.
+   * 5♣ 6♣ 2♥ 8♣ 9♣ 2♦ → best 5 using one wild as 7♣: 5-6-7-8-9 of clubs */
+  POKEVAL_Hand_9 h6 = {{{DH_CARD_FIVE, DH_SUIT_CLUBS},
+                         {DH_CARD_SIX, DH_SUIT_CLUBS},
+                         {DH_CARD_TWO, DH_SUIT_HEARTS},
+                         {DH_CARD_EIGHT, DH_SUIT_CLUBS},
+                         {DH_CARD_NINE, DH_SUIT_CLUBS},
+                         {DH_CARD_TWO, DH_SUIT_DIAMONDS}}};
+  POKEVAL_Hand_5 best = POKEVAL_hand5_from_hand7_wild(&h6, DH_CARD_TWO);
+  short rank = POKEVAL_evaluate_hand_wild(best, DH_CARD_TWO);
+  fprintf(stderr, "6-card wild (2 in first 5 and last, straight flush): %s\n", POKEVAL_rank[rank]);
+  assert(rank == POKEVAL_STRAIGHT_FLUSH);
+}
+
+/* --- more 7-card wild hands --- */
+
+{
+  /* Wild (2) is the 7th (last) card; no wilds in first 6.
+   * Q Q Q A K 4 2 → best 5: Q Q Q A 2 = four queens (wild) + ace kicker */
+  POKEVAL_Hand_9 h7 = {{{DH_CARD_QUEEN, DH_SUIT_SPADES},
+                         {DH_CARD_QUEEN, DH_SUIT_HEARTS},
+                         {DH_CARD_QUEEN, DH_SUIT_DIAMONDS},
+                         {DH_CARD_ACE, DH_SUIT_CLUBS},
+                         {DH_CARD_KING, DH_SUIT_SPADES},
+                         {DH_CARD_FOUR, DH_SUIT_HEARTS},
+                         {DH_CARD_TWO, DH_SUIT_CLUBS}}};
+  POKEVAL_Hand_5 best = POKEVAL_hand5_from_hand7_wild(&h7, DH_CARD_TWO);
+  short rank = POKEVAL_evaluate_hand_wild(best, DH_CARD_TWO);
+  fprintf(stderr, "7-card wild (2 last): %s\n", POKEVAL_rank[rank]);
+  assert(rank == POKEVAL_FOUR_OF_A_KIND);
+}
+
+{
+  /* Wild (2) in position 2 of first 5, another wild (2) as the 7th card.
+   * A A 2 A K 7 2 → three aces + two wilds = five of a kind */
+  POKEVAL_Hand_9 h7 = {{{DH_CARD_ACE, DH_SUIT_SPADES},
+                         {DH_CARD_ACE, DH_SUIT_HEARTS},
+                         {DH_CARD_TWO, DH_SUIT_DIAMONDS},
+                         {DH_CARD_ACE, DH_SUIT_CLUBS},
+                         {DH_CARD_KING, DH_SUIT_SPADES},
+                         {DH_CARD_SEVEN, DH_SUIT_HEARTS},
+                         {DH_CARD_TWO, DH_SUIT_CLUBS}}};
+  POKEVAL_Hand_5 best = POKEVAL_hand5_from_hand7_wild(&h7, DH_CARD_TWO);
+  short rank = POKEVAL_evaluate_hand_wild(best, DH_CARD_TWO);
+  fprintf(stderr, "7-card wild (2 in first 5 and last): %s\n", POKEVAL_rank[rank]);
+  assert(rank == POKEVAL_FIVE_OF_A_KIND);
+}
+
+{
+  /* Wild (2) in position 4 of first 5, another wild (2) as the 7th card; straight flush.
+   * 7♥ 8♥ 9♥ T♥ 2♠ K♣ 2♦ → best 5: 7-8-9-T-J of hearts (wild fills J♥) */
+  POKEVAL_Hand_9 h7 = {{{DH_CARD_SEVEN, DH_SUIT_HEARTS},
+                         {DH_CARD_EIGHT, DH_SUIT_HEARTS},
+                         {DH_CARD_NINE, DH_SUIT_HEARTS},
+                         {DH_CARD_TEN, DH_SUIT_HEARTS},
+                         {DH_CARD_TWO, DH_SUIT_SPADES},
+                         {DH_CARD_KING, DH_SUIT_CLUBS},
+                         {DH_CARD_TWO, DH_SUIT_DIAMONDS}}};
+  POKEVAL_Hand_5 best = POKEVAL_hand5_from_hand7_wild(&h7, DH_CARD_TWO);
+  short rank = POKEVAL_evaluate_hand_wild(best, DH_CARD_TWO);
+  fprintf(stderr, "7-card wild (2 in first 5 and last, straight flush): %s\n", POKEVAL_rank[rank]);
+  assert(rank == POKEVAL_STRAIGHT_FLUSH);
+}
+
 _MAIN_TAIL_
