@@ -86,6 +86,17 @@ DH_Card almost_straight4[4] = {
 assert(POKEVAL_score_visible_cards(flush5, 5) >
        POKEVAL_score_visible_cards(almost_straight4, 4));
 
+// Equal-rank single cards (different suits) must score identically —
+// J♥ does not "beat" J♠, forcing the second player to flip another card.
+DH_Card jack_h = {DH_CARD_JACK, DH_SUIT_HEARTS};
+DH_Card jack_s = {DH_CARD_JACK, DH_SUIT_SPADES};
+assert(POKEVAL_score_visible_cards(&jack_h, 1) == POKEVAL_score_visible_cards(&jack_s, 1));
+
+// Equal two-card hands (same ranks, different suits) must also score identically.
+DH_Card jt_h[2] = {{DH_CARD_JACK, DH_SUIT_HEARTS}, {DH_CARD_TEN, DH_SUIT_HEARTS}};
+DH_Card jt_s[2] = {{DH_CARD_JACK, DH_SUIT_SPADES}, {DH_CARD_TEN, DH_SUIT_SPADES}};
+assert(POKEVAL_score_visible_cards(jt_h, 2) == POKEVAL_score_visible_cards(jt_s, 2));
+
 // n=0 returns 0
 assert(POKEVAL_score_visible_cards(NULL, 0) == 0);
 

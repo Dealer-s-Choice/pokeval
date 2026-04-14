@@ -126,9 +126,11 @@ POKEVAL_API bool POKEVAL_card_bringin_lt(DH_Card a, DH_Card b);
 POKEVAL_API uint64_t POKEVAL_score_stud_upcards(const DH_Card *cards, int n);
 
 // Score 1-7 visible cards for betting-order comparison in no-peek games.
-// Handles the full range: delegates to POKEVAL_score_stud_upcards for n <= 4,
-// and uses full hand evaluation for n in [5, 7].
-// Higher score = better visible hand = acts first.
+// For n <= 4 uses the same encoding as POKEVAL_score_stud_upcards but WITHOUT
+// a suit tiebreaker, so equal-rank hands score identically (neither beats the
+// other, forcing the player to flip another card).
+// For n in [5, 7] uses full hand evaluation.
+// Higher score = better visible hand = must beat to stop flipping.
 POKEVAL_API uint64_t POKEVAL_score_visible_cards(const DH_Card *cards, int n);
 
 #ifdef __cplusplus

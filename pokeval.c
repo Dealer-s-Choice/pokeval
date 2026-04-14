@@ -1005,14 +1005,71 @@ uint64_t POKEVAL_score_stud_upcards(const DH_Card *cards, int n) {
 }
 
 // Score 1-7 visible cards for betting-order comparison in no-peek games.
-// For 1-4 cards, delegates to POKEVAL_score_stud_upcards.
+// For 1-4 cards uses the same encoding as POKEVAL_score_stud_upcards but
+// without the suit tiebreaker, so equal-rank hands (e.g. J♥ vs J♠) score
+// identically and neither "beats" the other.
 // For 5-7 cards, evaluates the best 5-card hand and returns a score in the
-// high bits so it always ranks above any stud upcard score.
+// high bits so it always ranks above any 1-4 card score.
 uint64_t POKEVAL_score_visible_cards(const DH_Card *cards, int n) {
   if (n <= 0)
     return 0;
-  if (n <= 4)
-    return POKEVAL_score_stud_upcards(cards, n);
+
+  if (n <= 4) {
+    int faces[4] = {0};
+    for (int i = 0; i < n; i++)
+      faces[i] = face_rank(cards[i].face_val);
+
+    // Insertion sort descending
+    for (int i = 1; i < n; i++) {
+      int key = faces[i], j = i - 1;
+      while (j >= 0 && faces[j] < key) {
+        faces[j + 1] = faces[j];
+        j--;
+      }
+      faces[j + 1] = key;
+    }
+
+    int cnt[15] = {0};
+    for (int i = 0; i < n; i++)
+      if (faces[i] >= 2 && faces[i] <= 14)
+        cnt[faces[i]]++;
+
+    int best_n = 1, best_f = 0, second_n = 0, second_f = 0;
+    for (int f = 14; f >= 2; f--) {
+      if (cnt[f] < 2)
+        continue;
+      if (cnt[f] > best_n || (cnt[f] == best_n && f > best_f)) {
+        second_n = best_n;
+        second_f = best_f;
+        best_n = cnt[f];
+        best_f = f;
+      } else if (second_f == 0 && cnt[f] >= 2) {
+        second_n = cnt[f];
+        second_f = f;
+      }
+    }
+    (void)second_n;
+
+    int hand_rank;
+    if (best_n == 4)
+      hand_rank = 7;
+    else if (best_n == 3)
+      hand_rank = 6;
+    else if (best_n == 2 && second_f > 0)
+      hand_rank = 5;
+    else if (best_n == 2)
+      hand_rank = 4;
+    else
+      hand_rank = 3;
+
+    uint64_t score = (uint64_t)hand_rank << 48;
+    score |= (uint64_t)best_f << 40;
+    score |= (uint64_t)second_f << 32;
+    for (int i = 0; i < 4 && i < n; i++)
+      score |= (uint64_t)faces[i] << (24 - i * 8);
+    // No suit bits: equal-rank hands must score identically.
+    return score;
+  }
 
   POKEVAL_Hand_9 hand9 = {0};
   for (int i = 0; i < n; i++)
