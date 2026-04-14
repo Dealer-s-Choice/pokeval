@@ -125,6 +125,12 @@ POKEVAL_API bool POKEVAL_card_bringin_lt(DH_Card a, DH_Card b);
 // n must be in [0, 4]. Returns 0 for empty input.
 POKEVAL_API uint64_t POKEVAL_score_stud_upcards(const DH_Card *cards, int n);
 
+// Score 1-7 visible cards for betting-order comparison in no-peek games.
+// Handles the full range: delegates to POKEVAL_score_stud_upcards for n <= 4,
+// and uses full hand evaluation for n in [5, 7].
+// Higher score = better visible hand = acts first.
+POKEVAL_API uint64_t POKEVAL_score_visible_cards(const DH_Card *cards, int n);
+
 #ifdef __cplusplus
 }
 #endif

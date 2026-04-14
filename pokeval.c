@@ -1003,3 +1003,33 @@ uint64_t POKEVAL_score_stud_upcards(const DH_Card *cards, int n) {
 
   return score;
 }
+
+// Score 1-7 visible cards for betting-order comparison in no-peek games.
+// For 1-4 cards, delegates to POKEVAL_score_stud_upcards.
+// For 5-7 cards, evaluates the best 5-card hand and returns a score in the
+// high bits so it always ranks above any stud upcard score.
+uint64_t POKEVAL_score_visible_cards(const DH_Card *cards, int n) {
+  if (n <= 0)
+    return 0;
+  if (n <= 4)
+    return POKEVAL_score_stud_upcards(cards, n);
+
+  POKEVAL_Hand_9 hand9 = {0};
+  for (int i = 0; i < n; i++)
+    hand9.card[i] = cards[i];
+  for (int i = n; i < 9; i++)
+    hand9.card[i] = DH_card_null;
+
+  POKEVAL_Hand_5 best5 = POKEVAL_hand5_from_hand7(&hand9);
+  short rank = POKEVAL_evaluate_hand(best5);
+
+  // Shift into bits [63:56] so this always exceeds any stud upcard score.
+  uint64_t score = ((uint64_t)(rank + 1)) << 56;
+
+  // Pack kicker face values for tiebreaking within the same hand rank.
+  POKEVAL_sort_hand(&best5);
+  for (int i = 0; i < POKEVAL_HAND_SIZE; i++)
+    score |= (uint64_t)(face_rank(best5.card[i].face_val) & 0xF) << (36 - i * 4);
+
+  return score;
+}

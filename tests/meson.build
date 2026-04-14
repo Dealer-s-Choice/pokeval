@@ -12,6 +12,7 @@ cases = [
   'four-of-a-kind',
   'five-of-a-kind',
   'wild',
+  'no_peek_visible',
 ]
 
 foreach test : cases
