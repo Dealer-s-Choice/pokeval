@@ -1005,11 +1005,14 @@ uint64_t POKEVAL_score_stud_upcards(const DH_Card *cards, int n) {
 }
 
 // Score 1-7 visible cards for betting-order comparison in no-peek games.
-// For 1-4 cards uses the same encoding as POKEVAL_score_stud_upcards but
-// without the suit tiebreaker, so equal-rank hands (e.g. J♥ vs J♠) score
-// identically and neither "beats" the other.
-// For 5-7 cards, evaluates the best 5-card hand and returns a score in the
-// high bits so it always ranks above any 1-4 card score.
+// Unified scale: (pokeval_rank+1) << 56 for hand rank; then 4-bit slots at
+// bits [55:52], [51:48], [47:44] … for v0/v1/kickers (no suit bits, so
+// equal-rank hands like J♥ and J♠ score identically).
+//
+// Slot layout (same for n≤4 and n≥5 so cross-n comparisons work correctly):
+//   v0: group face for pairs/trips/quads, or highest face for non-group hands
+//   v1: lower pair for two-pair/full-house, or 2nd-highest face for non-group
+//   kickers: remaining faces, descending
 uint64_t POKEVAL_score_visible_cards(const DH_Card *cards, int n) {
   if (n <= 0)
     return 0;
@@ -1050,24 +1053,38 @@ uint64_t POKEVAL_score_visible_cards(const DH_Card *cards, int n) {
     }
     (void)second_n;
 
-    int hand_rank;
+    int pokeval_rank;
     if (best_n == 4)
-      hand_rank = 7;
+      pokeval_rank = POKEVAL_FOUR_OF_A_KIND;
     else if (best_n == 3)
-      hand_rank = 6;
+      pokeval_rank = POKEVAL_THREE_OF_A_KIND;
     else if (best_n == 2 && second_f > 0)
-      hand_rank = 5;
+      pokeval_rank = POKEVAL_TWO_PAIR;
     else if (best_n == 2)
-      hand_rank = 4;
+      pokeval_rank = POKEVAL_PAIR;
     else
-      hand_rank = 3;
+      pokeval_rank = POKEVAL_HIGH_CARD;
 
-    uint64_t score = (uint64_t)hand_rank << 48;
-    score |= (uint64_t)best_f << 40;
-    score |= (uint64_t)second_f << 32;
-    for (int i = 0; i < 4 && i < n; i++)
-      score |= (uint64_t)faces[i] << (24 - i * 8);
-    // No suit bits: equal-rank hands must score identically.
+    // v0/v1: group face or two highest cards for high card
+    int v0, v1;
+    int vk[4], nk = 0;
+    if (pokeval_rank == POKEVAL_HIGH_CARD) {
+      v0 = (n >= 1) ? faces[0] : 0;
+      v1 = (n >= 2) ? faces[1] : 0;
+      for (int i = 2; i < n; i++) vk[nk++] = faces[i];
+    } else {
+      v0 = best_f;
+      v1 = second_f;
+      for (int i = 0; i < n; i++)
+        if (faces[i] != best_f && faces[i] != second_f)
+          vk[nk++] = faces[i];
+    }
+
+    uint64_t score = ((uint64_t)(pokeval_rank + 1)) << 56;
+    score |= (uint64_t)(v0 & 0xF) << 52;
+    score |= (uint64_t)(v1 & 0xF) << 48;
+    for (int i = 0; i < nk; i++)
+      score |= (uint64_t)(vk[i] & 0xF) << (44 - i * 4);
     return score;
   }
 
@@ -1079,14 +1096,47 @@ uint64_t POKEVAL_score_visible_cards(const DH_Card *cards, int n) {
 
   POKEVAL_Hand_5 best5 = POKEVAL_hand5_from_hand7(&hand9);
   short rank = POKEVAL_evaluate_hand(best5);
-
-  // Shift into bits [63:56] so this always exceeds any stud upcard score.
-  uint64_t score = ((uint64_t)(rank + 1)) << 56;
-
-  // Pack kicker face values for tiebreaking within the same hand rank.
   POKEVAL_sort_hand(&best5);
-  for (int i = 0; i < POKEVAL_HAND_SIZE; i++)
-    score |= (uint64_t)(face_rank(best5.card[i].face_val) & 0xF) << (36 - i * 4);
 
+  int v0 = 0, v1 = 0;
+  int vk[5], nk = 0;
+
+  if (rank == POKEVAL_HIGH_CARD || rank == POKEVAL_STRAIGHT ||
+      rank == POKEVAL_FLUSH || rank == POKEVAL_STRAIGHT_FLUSH ||
+      rank == POKEVAL_ROYAL_FLUSH) {
+    v0 = face_rank(best5.card[0].face_val);
+    v1 = face_rank(best5.card[1].face_val);
+    for (int i = 2; i < POKEVAL_HAND_SIZE; i++)
+      vk[nk++] = face_rank(best5.card[i].face_val);
+  } else {
+    int gcnt[15] = {0};
+    for (int i = 0; i < POKEVAL_HAND_SIZE; i++) {
+      int f = face_rank(best5.card[i].face_val);
+      if (f >= 2 && f <= 14)
+        gcnt[f]++;
+    }
+    int target = (rank == POKEVAL_FIVE_OF_A_KIND) ? 5 :
+                 (rank == POKEVAL_FOUR_OF_A_KIND) ? 4 :
+                 (rank == POKEVAL_THREE_OF_A_KIND || rank == POKEVAL_FULL_HOUSE) ? 3 : 2;
+    for (int f = 14; f >= 2; f--) {
+      if (gcnt[f] >= target) { v0 = f; break; }
+    }
+    if (rank == POKEVAL_TWO_PAIR || rank == POKEVAL_FULL_HOUSE) {
+      for (int f = 14; f >= 2; f--) {
+        if (f != v0 && gcnt[f] >= 2) { v1 = f; break; }
+      }
+    }
+    for (int i = 0; i < POKEVAL_HAND_SIZE; i++) {
+      int f = face_rank(best5.card[i].face_val);
+      if (f != v0 && f != v1)
+        vk[nk++] = f;
+    }
+  }
+
+  uint64_t score = ((uint64_t)(rank + 1)) << 56;
+  score |= (uint64_t)(v0 & 0xF) << 52;
+  score |= (uint64_t)(v1 & 0xF) << 48;
+  for (int i = 0; i < nk; i++)
+    score |= (uint64_t)(vk[i] & 0xF) << (44 - i * 4);
   return score;
 }

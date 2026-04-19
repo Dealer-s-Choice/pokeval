@@ -97,6 +97,44 @@ DH_Card jt_h[2] = {{DH_CARD_JACK, DH_SUIT_HEARTS}, {DH_CARD_TEN, DH_SUIT_HEARTS}
 DH_Card jt_s[2] = {{DH_CARD_JACK, DH_SUIT_SPADES}, {DH_CARD_TEN, DH_SUIT_SPADES}};
 assert(POKEVAL_score_visible_cards(jt_h, 2) == POKEVAL_score_visible_cards(jt_s, 2));
 
+// n=4 pair of jacks beats n=5 pair of threes (standard poker ranking applies cross-n)
+DH_Card pair_jacks4[4] = {
+    {DH_CARD_JACK, DH_SUIT_HEARTS},
+    {DH_CARD_JACK, DH_SUIT_DIAMONDS},
+    {DH_CARD_ACE,  DH_SUIT_SPADES},
+    {DH_CARD_KING, DH_SUIT_CLUBS},
+};
+DH_Card pair_threes5[5] = {
+    {DH_CARD_THREE, DH_SUIT_CLUBS},
+    {DH_CARD_THREE, DH_SUIT_HEARTS},
+    {DH_CARD_ACE,   DH_SUIT_SPADES},
+    {DH_CARD_KING,  DH_SUIT_HEARTS},
+    {DH_CARD_QUEEN, DH_SUIT_DIAMONDS},
+};
+assert(POKEVAL_score_visible_cards(pair_jacks4, 4) >
+       POKEVAL_score_visible_cards(pair_threes5, 5));
+
+// n=4 four-of-a-kind beats n=5 flush
+DH_Card quads4[4] = {
+    {DH_CARD_ACE, DH_SUIT_CLUBS},
+    {DH_CARD_ACE, DH_SUIT_HEARTS},
+    {DH_CARD_ACE, DH_SUIT_SPADES},
+    {DH_CARD_ACE, DH_SUIT_DIAMONDS},
+};
+assert(POKEVAL_score_visible_cards(quads4, 4) >
+       POKEVAL_score_visible_cards(flush5, 5));
+
+// n=5 high card does NOT beat n=4 pair (regression guard for the original bug)
+DH_Card high_card5[5] = {
+    {DH_CARD_ACE,   DH_SUIT_SPADES},
+    {DH_CARD_KING,  DH_SUIT_HEARTS},
+    {DH_CARD_QUEEN, DH_SUIT_CLUBS},
+    {DH_CARD_JACK,  DH_SUIT_DIAMONDS},
+    {DH_CARD_NINE,  DH_SUIT_CLUBS},
+};
+assert(POKEVAL_score_visible_cards(pair_nines, 4) >
+       POKEVAL_score_visible_cards(high_card5, 5));
+
 // n=0 returns 0
 assert(POKEVAL_score_visible_cards(NULL, 0) == 0);
 
