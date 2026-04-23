@@ -1069,7 +1069,7 @@ uint64_t POKEVAL_score_visible_cards(const DH_Card *cards, int n) {
     int v0, v1;
     int vk[4], nk = 0;
     if (pokeval_rank == POKEVAL_HIGH_CARD) {
-      v0 = (n >= 1) ? faces[0] : 0;
+      v0 = faces[0];
       v1 = (n >= 2) ? faces[1] : 0;
       for (int i = 2; i < n; i++) vk[nk++] = faces[i];
     } else {
